@@ -28,8 +28,15 @@ const server = http.createServer((req, res) => {
     let body = '';
     req.on('data', d => body += d);
     req.on('end', () => {
+      const fs = require('fs');
+      // 同步 index.html 给 GitHub Pages
+      const mainFile = path.join(REPO_DIR, '产品开发进度_管理工具.html');
+      const idxFile = path.join(REPO_DIR, 'index.html');
+      if (fs.existsSync(mainFile)) {
+        fs.copyFileSync(mainFile, idxFile);
+      }
       const status = [];
-      status.push('ADD: ' + run('git add "产品开发进度_管理工具.html"'));
+      status.push('ADD: ' + run('git add "产品开发进度_管理工具.html" index.html'));
       const diff = run('git diff --cached --stat');
       if (diff.includes('ERR') || !diff) {
         res.writeHead(200, { 'Content-Type': 'application/json' });
