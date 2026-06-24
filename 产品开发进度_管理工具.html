@@ -1088,13 +1088,14 @@ async function pushSync(){
   if(!confirm('确认将当前数据推送同步到云端？\n\n这将覆盖远程仓库中的内容。')) return;
   const btn=document.getElementById('pushBtn');
   btn.disabled=true;btn.textContent='🚀 推送中…';
+  function done(){btn.disabled=false;btn.textContent='🚀 推送同步';}
   try{
     // 先确认服务器在线
     let serverOk=false;
     try{const r=await fetch('http://localhost:3333/status',{signal:AbortSignal.timeout(3000)});serverOk=r.ok;}catch(e){}
     if(!serverOk){
       toast('⚠️ 推送服务器未运行，请双击「启动同步服务器.cmd」后再推送',true,8000);
-      return;
+      return done();
     }
     saveData();
     const body=JSON.stringify({products:products,members:getMembers()});
@@ -1102,9 +1103,8 @@ async function pushSync(){
     const d=await r.json();
     if(d.ok){toast('✓ 推送完成！\n'+d.msg.replace(/\n/g,' | '),false,8000);}
     else{toast('✗ 推送失败：'+d.msg,true,8000)}
-  }catch(e){toast('✗ 推送失败：'+e.message,true,8000)}finally{
-    btn.disabled=false;btn.textContent='🚀 推送同步';
-  }
+  }catch(e){toast('✗ 推送失败：'+e.message,true,8000)}
+  done();
 }
 
 async function writeToFile(){
