@@ -268,7 +268,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 <div class="main">
   <div class="toolbar">
     <span style="font-weight:700;font-size:12px;color:#1e293b">📋 进度总览</span>
-    <button class="tp-toggle-btn" id="teamProgBtn" onclick="toggleTeamProgress()" title="切换组员进度视图">👥 组员进度</button>
+    <button class="tp-toggle-btn" id="teamProgBtn" title="切换组员进度视图">👥 组员进度</button>
     <div class="filter-group" id="filterGroup">
       <button class="btn active" data-f="all" onclick="filterCat('all',this)">全部</button>
       <button class="btn" data-f="相框" onclick="filterCat('相框',this)">🖼 相框</button>
@@ -1101,7 +1101,6 @@ function importDataPrompt(){
 let viewMode = 'list'; // 'list' | 'team'
 
 function toggleTeamProgress(){
-  try{
   const btn = document.getElementById('teamProgBtn');
   const listWrap = document.getElementById('listWrap');
   const teamWrap = document.getElementById('teamProgressWrap');
@@ -1114,7 +1113,7 @@ function toggleTeamProgress(){
     btn.textContent = '📋 进度总览';
     listWrap.style.display = 'none';
     filterGroup.style.display = 'none';
-    hint.textContent = '按组员查看批次进度';
+    hint.textContent = '按组员查看批次进度 · 点击批次可跳转回列表';
     buildTeamProgress();
     teamWrap.classList.add('show');
   } else {
@@ -1126,7 +1125,6 @@ function toggleTeamProgress(){
     hint.textContent = isLoggedIn() ? '点击进度条或产品名即可编辑 →' : '悬停进度条查看详情';
     teamWrap.classList.remove('show');
   }
-  }catch(e){ console.error('toggleTeamProgress error:', e); }
 }
 
 function buildTeamProgress(){
@@ -1217,7 +1215,7 @@ function buildTeamProgress(){
       if(doneW > 0.1) barHTML += '<div class="tp-b-done" style="width:'+doneW+'%"></div>';
       if(currW > 0.1) barHTML += '<div class="tp-b-curr" style="left:'+doneW+'%;width:'+currW+'%"></div>';
       
-      html += `<div class="tp-batch-row${bShelved?' shelved':''}">
+      html += `<div class="tp-batch-row${bShelved?' shelved':''}" onclick="navigateToBatch(${p.id},${b.bid},'${p.cat}')" style="cursor:pointer" title="点击跳转到列表页对应批次">
         <div class="tp-b-prod" title="${p.name}">${p.name}</div>
         <div class="tp-b-cat">${p.cat}</div>
         <div class="tp-b-name" title="${b.name}">#${b.bid} ${b.name}</div>
@@ -1238,6 +1236,40 @@ function toggleTeamCard(cardId){
   document.getElementById(cardId).classList.toggle('collapsed');
 }
 
+function navigateToBatch(pid, bid, cat){
+  // 1. 切回列表视图
+  viewMode = 'list';
+  const btn = document.getElementById('teamProgBtn');
+  btn.classList.remove('active');
+  btn.textContent = '👥 组员进度';
+  document.getElementById('listWrap').style.display = '';
+  document.getElementById('filterGroup').style.display = '';
+  document.getElementById('toolbarHint').textContent = isLoggedIn() ? '点击进度条或产品名即可编辑 →' : '悬停进度条查看详情';
+  document.getElementById('teamProgressWrap').classList.remove('show');
+  
+  // 2. cat名 → cid 映射
+  const catMap = {"相框":"c0","柜子":"c1","PET":"c2","其它":"c3"};
+  const cid = catMap[cat] || 'c0';
+  
+  // 3. 展开对应大类
+  const catRow = document.querySelector('.cat-row[data-cid="'+cid+'"]');
+  if(catRow && catRow.classList.contains('collapsed')) toggleCat(cid);
+  
+  // 4. 展开对应产品
+  if(!expandedProds[pid]) toggleProd(cid, pid);
+  
+  // 5. 滚动到该批次并高亮
+  setTimeout(function(){
+    const batchRow = document.querySelector('.batch-row[data-pid="'+pid+'"]');
+    if(batchRow){
+      batchRow.scrollIntoView({behavior:'smooth', block:'center'});
+      batchRow.style.background = '#fef3c7';
+      batchRow.style.transition = 'background 0.5s';
+      setTimeout(function(){ batchRow.style.background = ''; }, 2500);
+    }
+  }, 150);
+}
+
 function refreshView(){
   if(viewMode === 'team'){
     buildTeamProgress();
@@ -1250,6 +1282,7 @@ function refreshView(){
 document.getElementById("overlay").addEventListener("click",()=>{closeEdit();closeAdd()});
 document.getElementById("loginOverlay").addEventListener("click",closeLogin);
 document.getElementById("changepwOverlay").addEventListener("click",closeChangePw);
+document.getElementById("teamProgBtn").addEventListener("click",toggleTeamProgress);
 
 /* ========== 初始化 ========== */
 updateAuthUI();
