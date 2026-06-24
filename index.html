@@ -259,7 +259,6 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
     <button class="btn lock-btn" id="lockBtn" onclick="logout()" style="display: none;">🚪 退出登录</button>
     <button class="btn accent" id="addBtn" style="display: none;" onclick="showAddPanel()">＋ 添加产品</button>
     <button class="btn accent" onclick="shareVersion()">📤 分享</button>
-    <button class="btn" id="teamBtn" style="display:none" title="管理组员">👥 组员</button>
     <button class="btn" id="autoSaveBtn" onclick="enableAutoSave()" style="background: rgb(236, 253, 245); border-color: rgb(110, 231, 183); color: rgb(5, 150, 105);">💾 已启用</button>
     <button class="btn" id="pushBtn" onclick="pushSync()" style="display:none" title="推送同步到云端">🚀 推送同步</button>
   </div>
@@ -269,6 +268,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
   <div class="toolbar">
     <span style="font-weight:700;font-size:12px;color:#1e293b">📋 进度总览</span>
     <button class="tp-toggle-btn" id="teamProgBtn" title="切换组员进度视图">👥 组员进度</button>
+    <button class="btn" id="teamBtn" style="display:none" title="管理组员">👥 组员</button>
     <div class="filter-group" id="filterGroup">
       <button class="btn active" data-f="all" onclick="filterCat('all',this)">全部</button>
       <button class="btn" data-f="相框" onclick="filterCat('相框',this)">🖼 相框</button>
@@ -557,16 +557,22 @@ function getMembers(){
 }
 function saveMembers(list){try{localStorage.setItem(MEMBER_KEY,JSON.stringify(list))}catch(e){}}
 function showTeamPanel(){
+  try{
+  console.log('showTeamPanel called');
   if(!isLoggedIn()){toast("请先登录",true);return}
   const members=getMembers();
   const el=document.getElementById('teamList');
+  if(!el){toast("内部错误：找不到teamList",true);return}
   if(members.length===0)el.innerHTML='<div class="tm-empty">暂无组员，请在下方添加</div>';
   else el.innerHTML=members.map(m=>{
     const count=products.filter(p=>(p.person===m||p.batches.some(b=>b.person===m))).length;
     return `<div class="tm-item"><span class="tm-name">${m}</span><span class="tm-count">${count}个产品</span><button class="tm-del" data-member="${m}" title="删除">✕</button></div>`;
   }).join('');
-  document.getElementById('teamPanel').classList.add('show');
-  setTimeout(()=>document.getElementById('newMemberInput').focus(),150);
+  const panel=document.getElementById('teamPanel');
+  if(!panel){toast("内部错误：找不到teamPanel",true);return}
+  panel.classList.add('show');
+  setTimeout(()=>{const inp=document.getElementById('newMemberInput');if(inp)inp.focus()},150);
+  }catch(e){toast("错误: "+e.message,true);console.error(e)}
 }
 function closeTeamPanel(){document.getElementById('teamPanel').classList.remove('show')}
 function addMember(){
@@ -1286,7 +1292,11 @@ document.getElementById("overlay").addEventListener("click",()=>{closeEdit();clo
 document.getElementById("loginOverlay").addEventListener("click",closeLogin);
 document.getElementById("changepwOverlay").addEventListener("click",closeChangePw);
 document.getElementById("teamProgBtn").addEventListener("click",toggleTeamProgress);
-document.getElementById("teamBtn").addEventListener("click",showTeamPanel);
+document.getElementById("teamBtn").addEventListener("click",function(e){
+  e.preventDefault(); e.stopPropagation();
+  toast("正在打开组员面板…");
+  showTeamPanel();
+});
 document.getElementById("teamOverlay").addEventListener("click",closeTeamPanel);
 document.getElementById("tbCloseBtn").addEventListener("click",closeTeamPanel);
 document.getElementById("addMemberBtn").addEventListener("click",addMember);
