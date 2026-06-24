@@ -205,7 +205,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
     <button class="btn accent" id="addBtn" style="" onclick="showAddPanel()">＋ 添加产品</button>
     <button class="btn accent" onclick="shareVersion()">📤 分享</button>
     <button class="btn" id="autoSaveBtn" onclick="enableAutoSave()" style="background: rgb(236, 253, 245); border-color: rgb(110, 231, 183); color: rgb(5, 150, 105);">💾 已启用</button>
-    <button class="btn" id="pushBtn" onclick="pushSync()" style="" title="推送同步到云端">🚀 推送同步</button>
+    <button class="btn" id="pushBtn" onclick="pushSync()" style="display:none" title="推送同步到云端">🚀 推送同步</button>
   </div>
 </div>
 
@@ -475,6 +475,7 @@ function updateAuthUI(){
   document.getElementById("addBtn").style.display=logged?"":"none";
   document.getElementById("toolbarHint").textContent=logged?"点击进度条或产品名即可编辑 →":"悬停进度条查看详情";
   document.getElementById("changePwBtn").style.display=logged?"":"none";
+  document.getElementById("pushBtn").style.display=logged?"":"none";
   document.getElementById("loginTitle").textContent=logged?"已登录":"登录验证";
   document.getElementById("loginDesc").textContent=logged?"当前拥有编辑权限":"输入密码后获得编辑权限";
 }
