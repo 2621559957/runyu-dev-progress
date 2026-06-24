@@ -192,6 +192,28 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(10px);background:#1e293b;color:#fff;padding:10px 22px;border-radius:10px;font-size:12px;z-index:300;opacity:0;transition:all .25s;pointer-events:none;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,0.2)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.warn{background:#d97706}
+/* 组员管理面板 */
+.team-panel{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center}
+.team-panel.show{display:flex}
+.team-overlay{position:absolute;inset:0;background:rgba(0,0,0,.35)}
+.team-box{position:relative;background:#fff;border-radius:16px;width:460px;max-width:92vw;max-height:75vh;display:flex;flex-direction:column;box-shadow:0 16px 48px rgba(0,0,0,.12)}
+.team-box .tb-head{padding:18px 22px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center}
+.team-box .tb-head h3{font-size:16px;font-weight:700;color:#1e293b}
+.team-box .tb-close{width:32px;height:32px;border-radius:8px;border:none;background:#f1f5f9;font-size:16px;cursor:pointer;color:#64748b;display:flex;align-items:center;justify-content:center}
+.team-box .tb-close:hover{background:#e2e8f0}
+.team-box .tb-body{flex:1;overflow-y:auto;padding:14px 22px}
+.team-box .tb-body .tm-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:10px;margin-bottom:6px;background:#f8fafc;border:1px solid #e2e8f0}
+.team-box .tb-body .tm-item:hover{background:#f1f5f9}
+.team-box .tb-body .tm-name{font-size:14px;font-weight:600;color:#1e293b}
+.team-box .tb-body .tm-count{font-size:11px;color:#94a3b8;margin-left:8px}
+.team-box .tb-body .tm-del{width:28px;height:28px;border-radius:6px;border:1px solid #e2e8f0;background:#fff;font-size:14px;cursor:pointer;color:#ef4444;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.team-box .tb-body .tm-del:hover{background:#fef2f2;border-color:#fca5a5}
+.team-box .tb-foot{padding:14px 22px;border-top:1px solid #e2e8f0;display:flex;gap:8px}
+.team-box .tb-foot input{flex:1;padding:8px 12px;border-radius:8px;border:1px solid #d1d5db;font-size:13px;outline:none}
+.team-box .tb-foot input:focus{border-color:#818cf8}
+.team-box .tb-foot button{padding:8px 18px;border-radius:8px;border:none;background:#818cf8;color:#fff;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+.team-box .tb-foot button:hover{background:#6366f1}
+.team-box .tb-empty{text-align:center;padding:30px;color:#94a3b8;font-size:13px}
 </style>
 </head>
 <body>
@@ -204,6 +226,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
     <button class="btn lock-btn" id="lockBtn" onclick="logout()" style="">🚪 退出登录</button>
     <button class="btn accent" id="addBtn" style="" onclick="showAddPanel()">＋ 添加产品</button>
     <button class="btn accent" onclick="shareVersion()">📤 分享</button>
+    <button class="btn" id="teamBtn" onclick="showTeamPanel()" style="display:none" title="管理组员">👥 组员</button>
     <button class="btn" id="autoSaveBtn" onclick="enableAutoSave()" style="background: rgb(236, 253, 245); border-color: rgb(110, 231, 183); color: rgb(5, 150, 105);">💾 已启用</button>
     <button class="btn" id="pushBtn" onclick="pushSync()" style="display:none" title="推送同步到云端">🚀 推送同步</button>
   </div>
@@ -265,6 +288,19 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
       <button class="btn accent" onclick="addProduct()">添加</button>
     </div></div>
 <div class="toast" id="toast" style="white-space: pre-line;"></div>
+
+<!-- 组员管理面板 -->
+<div class="team-panel" id="teamPanel">
+  <div class="team-overlay" onclick="closeTeamPanel()"></div>
+  <div class="team-box">
+    <div class="tb-head"><h3>👥 组员管理</h3><button class="tb-close" onclick="closeTeamPanel()">✕</button></div>
+    <div class="tb-body" id="teamList"></div>
+    <div class="tb-foot">
+      <input id="newMemberInput" placeholder="输入新组员姓名" onkeydown="if(event.key==='Enter')addMember()">
+      <button onclick="addMember()">＋ 添加</button>
+    </div>
+  </div>
+</div>
 <div class="bar-tooltip" id="tooltip" style="left: 789.2px; top: 347px;"><div class="tt-title">悬浮框 · 第2批</div><div style="display:flex;align-items:center;gap:6px;margin-top:3px"><span class="tt-status curr">进行中</span><span style="color:#cbd5e1;font-size:10px">调研立项  06.23~06.23</span></div><div style="display:flex;align-items:center;gap:6px;margin-top:3px"><span class="tt-status pend">待开始</span><span style="color:#cbd5e1;font-size:10px">设计打样  06.23~06.23</span></div><div style="color:#818cf8;font-size:9px;margin-left:50px;margin-top:1px">📝 22</div><div style="display:flex;align-items:center;gap:6px;margin-top:3px"><span class="tt-status pend">待开始</span><span style="color:#cbd5e1;font-size:10px">供应商确认  06.23~06.23</span></div><div style="display:flex;align-items:center;gap:6px;margin-top:3px"><span class="tt-status pend">待开始</span><span style="color:#cbd5e1;font-size:10px">样品测试  06.23~06.23</span></div><div style="display:flex;align-items:center;gap:6px;margin-top:3px"><span class="tt-status pend">待开始</span><span style="color:#cbd5e1;font-size:10px">大货生产  06.23~06.23</span></div><div style="display:flex;align-items:center;gap:6px;margin-top:3px"><span class="tt-status pend">待开始</span><span style="color:#cbd5e1;font-size:10px">品质验货  06.23~06.23</span></div><div style="display:flex;align-items:center;gap:6px;margin-top:3px"><span class="tt-status pend">待开始</span><span style="color:#cbd5e1;font-size:10px">FBA发货  06.23~06.23</span></div><div style="color:#94a3b8;font-size:10px;margin-top:4px">👤 陈工</div></div>
 
 <script>
@@ -468,6 +504,50 @@ function isLoggedIn(){return sessionStorage.getItem(AUTH_KEY)==="1"}
 function getPassword(){return localStorage.getItem(PW_KEY)||DEFAULT_PW}
 function savePassword(pw){localStorage.setItem(PW_KEY,pw)}
 
+/* ========== 组员管理 ========== */
+const MEMBER_KEY = 'team_members_list';
+function getMembers(){
+  try{const d=localStorage.getItem(MEMBER_KEY);if(d)return JSON.parse(d)}catch(e){}
+  // 首次从已有数据中提取
+  const persons=new Set();
+  products.forEach(p=>{if(p.person)persons.add(p.person);p.batches.forEach(b=>{if(b.person)persons.add(b.person)})});
+  const m=[...persons].filter(Boolean).sort();
+  if(m.length>0)saveMembers(m);
+  return m;
+}
+function saveMembers(list){try{localStorage.setItem(MEMBER_KEY,JSON.stringify(list))}catch(e){}}
+function showTeamPanel(){
+  if(!isLoggedIn()){toast("请先登录",true);return}
+  const members=getMembers();
+  const el=document.getElementById('teamList');
+  if(members.length===0)el.innerHTML='<div class="tm-empty">暂无组员，请在下方添加</div>';
+  else el.innerHTML=members.map(m=>{
+    const count=products.filter(p=>(p.person===m||p.batches.some(b=>b.person===m))).length;
+    return `<div class="tm-item"><span class="tm-name">${m}</span><span class="tm-count">${count}个产品</span><button class="tm-del" onclick="delMember('${m}')" title="删除">✕</button></div>`;
+  }).join('');
+  document.getElementById('teamPanel').classList.add('show');
+  setTimeout(()=>document.getElementById('newMemberInput').focus(),150);
+}
+function closeTeamPanel(){document.getElementById('teamPanel').classList.remove('show')}
+function addMember(){
+  const v=document.getElementById('newMemberInput').value.trim();
+  if(!v){toast('请输入组员姓名');return}
+  const members=getMembers();
+  if(members.includes(v)){toast('该组员已存在');return}
+  members.push(v);members.sort();
+  saveMembers(members);showTeamPanel();
+  document.getElementById('newMemberInput').value='';
+  toast('✓ 已添加：'+v);
+}
+function delMember(name){
+  if(!confirm('确认删除组员「'+name+'」？\n（不会删除已关联的产品，仅从列表中移除）'))return;
+  const members=getMembers().filter(m=>m!==name);
+  saveMembers(members);showTeamPanel();toast('已删除：'+name);
+}
+function buildMemberOptions(selected){
+  return '<option value="">未指定</option>'+getMembers().map(m=>'<option value="'+m+'"'+(selected===m?' selected':'')+'>'+m+'</option>').join('');
+}
+
 function updateAuthUI(){
   const logged=isLoggedIn();
   document.getElementById("loginBtn").style.display=logged?"none":"";
@@ -476,6 +556,7 @@ function updateAuthUI(){
   document.getElementById("toolbarHint").textContent=logged?"点击进度条或产品名即可编辑 →":"悬停进度条查看详情";
   document.getElementById("changePwBtn").style.display=logged?"":"none";
   document.getElementById("pushBtn").style.display=logged?"":"none";
+  document.getElementById("teamBtn").style.display=logged?"":"none";
   document.getElementById("loginTitle").textContent=logged?"已登录":"登录验证";
   document.getElementById("loginDesc").textContent=logged?"当前拥有编辑权限":"输入密码后获得编辑权限";
 }
@@ -732,7 +813,7 @@ function openEdit(pid){
       const bTagLabel=bAllDone?'已全部完成':bCurr?'进行中':'未开始';
       batchHTML+=`<div class="batch-card${b.shelved?' shelved':''}">
         <div class="bc-head">
-          <div class="bc-info"><span class="bc-tag ${bTag}">${bTagLabel}</span><input value="${b.name}" onchange="updBName(${p.id},${b.bid},this.value)" placeholder="批次名称"><input value="${b.person||''}" onchange="updBPerson(${p.id},${b.bid},this.value)" placeholder="负责人" style="width:72px;margin-left:6px;padding:3px 6px;font-size:11px;border:1px solid #d1d5db;border-radius:4px"></div>
+          <div class="bc-info"><span class="bc-tag ${bTag}">${bTagLabel}</span><input value="${b.name}" onchange="updBName(${p.id},${b.bid},this.value)" placeholder="批次名称"><select onchange="updBPerson(${p.id},${b.bid},this.value)" style="width:84px;margin-left:6px;padding:2px 4px;font-size:11px;border:1px solid #d1d5db;border-radius:4px;background:#fff">${buildMemberOptions(b.person||'')}</select></div>
           <button class="bc-shelve" onclick="toggleShelve(${p.id},${b.bid},this)" title="${b.shelved?'取消搁置':'搁置此批次'}">${b.shelved?'⏸ 已搁置':'⏸ 搁置'}</button>
           <span class="bc-del" onclick="delBatch(${p.id},${b.bid},this)" title="删除批次">🗑</span>
         </div>
