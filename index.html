@@ -259,7 +259,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
     <button class="btn lock-btn" id="lockBtn" onclick="logout()" style="display: none;">🚪 退出登录</button>
     <button class="btn accent" id="addBtn" style="display: none;" onclick="showAddPanel()">＋ 添加产品</button>
     <button class="btn accent" onclick="shareVersion()">📤 分享</button>
-    <button class="btn" id="teamBtn" onclick="showTeamPanel()" style="display:none" title="管理组员">👥 组员</button>
+    <button class="btn" id="teamBtn" style="display:none" title="管理组员">👥 组员</button>
     <button class="btn" id="autoSaveBtn" onclick="enableAutoSave()" style="background: rgb(236, 253, 245); border-color: rgb(110, 231, 183); color: rgb(5, 150, 105);">💾 已启用</button>
     <button class="btn" id="pushBtn" onclick="pushSync()" style="display:none" title="推送同步到云端">🚀 推送同步</button>
   </div>
@@ -328,13 +328,13 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 
 <!-- 组员管理面板 -->
 <div class="team-panel" id="teamPanel">
-  <div class="team-overlay" onclick="closeTeamPanel()"></div>
+  <div class="team-overlay" id="teamOverlay"></div>
   <div class="team-box">
-    <div class="tb-head"><h3>👥 组员管理</h3><button class="tb-close" onclick="closeTeamPanel()">✕</button></div>
+    <div class="tb-head"><h3>👥 组员管理</h3><button class="tb-close" id="tbCloseBtn">✕</button></div>
     <div class="tb-body" id="teamList"></div>
     <div class="tb-foot">
-      <input id="newMemberInput" placeholder="输入新组员姓名" onkeydown="if(event.key==='Enter')addMember()">
-      <button onclick="addMember()">＋ 添加</button>
+      <input id="newMemberInput" placeholder="输入新组员姓名">
+      <button id="addMemberBtn">＋ 添加</button>
     </div>
   </div>
 </div>
@@ -563,7 +563,7 @@ function showTeamPanel(){
   if(members.length===0)el.innerHTML='<div class="tm-empty">暂无组员，请在下方添加</div>';
   else el.innerHTML=members.map(m=>{
     const count=products.filter(p=>(p.person===m||p.batches.some(b=>b.person===m))).length;
-    return `<div class="tm-item"><span class="tm-name">${m}</span><span class="tm-count">${count}个产品</span><button class="tm-del" onclick="delMember('${m}')" title="删除">✕</button></div>`;
+    return `<div class="tm-item"><span class="tm-name">${m}</span><span class="tm-count">${count}个产品</span><button class="tm-del" data-member="${m}" title="删除">✕</button></div>`;
   }).join('');
   document.getElementById('teamPanel').classList.add('show');
   setTimeout(()=>document.getElementById('newMemberInput').focus(),150);
@@ -1286,6 +1286,16 @@ document.getElementById("overlay").addEventListener("click",()=>{closeEdit();clo
 document.getElementById("loginOverlay").addEventListener("click",closeLogin);
 document.getElementById("changepwOverlay").addEventListener("click",closeChangePw);
 document.getElementById("teamProgBtn").addEventListener("click",toggleTeamProgress);
+document.getElementById("teamBtn").addEventListener("click",showTeamPanel);
+document.getElementById("teamOverlay").addEventListener("click",closeTeamPanel);
+document.getElementById("tbCloseBtn").addEventListener("click",closeTeamPanel);
+document.getElementById("addMemberBtn").addEventListener("click",addMember);
+document.getElementById("newMemberInput").addEventListener("keydown",function(e){if(e.key==='Enter')addMember()});
+// 事件委托：组员列表中的删除按钮
+document.getElementById("teamList").addEventListener("click",function(e){
+  const btn=e.target.closest('.tm-del');
+  if(btn){delMember(btn.getAttribute('data-member'))}
+});
 
 /* ========== 初始化 ========== */
 updateAuthUI();
