@@ -1093,17 +1093,18 @@ async function pushSync(){
     let serverOk=false;
     try{const r=await fetch('http://localhost:3333/status',{signal:AbortSignal.timeout(3000)});serverOk=r.ok;}catch(e){}
     if(!serverOk){
-      toast('⚠️ 推送服务器未运行，正在尝试…\n请双击「启动同步服务器.cmd」后再推送',true,8000);
-      btn.disabled=false;btn.textContent='🚀 推送同步';return;
+      toast('⚠️ 推送服务器未运行，请双击「启动同步服务器.cmd」后再推送',true,8000);
+      return;
     }
     saveData();
     const body=JSON.stringify({products:products,members:getMembers()});
     const r=await fetch('http://localhost:3333/push',{method:'POST',headers:{'Content-Type':'application/json'},body:body,signal:AbortSignal.timeout(120000)});
     const d=await r.json();
-    if(d.ok){toast('✓ 推送完成！\n'+d.msg.replace(/\n/g,' | '),false,8000);btn.textContent='🚀 推送同步';}
+    if(d.ok){toast('✓ 推送完成！\n'+d.msg.replace(/\n/g,' | '),false,8000);}
     else{toast('✗ 推送失败：'+d.msg,true,8000)}
-  }catch(e){toast('✗ 推送失败：'+e.message,true,8000)}
-  btn.disabled=false;
+  }catch(e){toast('✗ 推送失败：'+e.message,true,8000)}finally{
+    btn.disabled=false;btn.textContent='🚀 推送同步';
+  }
 }
 
 async function writeToFile(){
