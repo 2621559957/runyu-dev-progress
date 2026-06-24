@@ -116,8 +116,8 @@ const server = http.createServer((req, res) => {
       }
       status.push('COMMIT: ' + commitRes.msg);
 
-      // 7. Push（-c http.proxy="" 避免系统代理干扰 SSL 握手）
-      const pushRes = runGit(['-c', 'http.proxy=', 'push']);
+      // 7. Push
+      const pushRes = runGit(['push']);
       if (!pushRes.ok) {
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: false, msg: status.join('\n') + '\nPUSH FAILED: ' + pushRes.msg }));
