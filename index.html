@@ -218,7 +218,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 /* 组员进度视图 */
 .team-progress-container{display:none;overflow-x:auto}
 .team-progress-container.show{display:block}
-.tp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:16px;padding:16px}
+.tp-grid{display:flex;flex-direction:column;gap:16px;padding:16px;max-width:960px}
 .tp-card{background:#fff;border-radius:12px;border:1px solid #e2e8f0;overflow:hidden;transition:box-shadow .15s}
 .tp-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.06)}
 .tp-card-head{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #f1f5f9;cursor:pointer;user-select:none}
@@ -1101,6 +1101,7 @@ function importDataPrompt(){
 let viewMode = 'list'; // 'list' | 'team'
 
 function toggleTeamProgress(){
+  try{
   const btn = document.getElementById('teamProgBtn');
   const listWrap = document.getElementById('listWrap');
   const teamWrap = document.getElementById('teamProgressWrap');
@@ -1125,14 +1126,17 @@ function toggleTeamProgress(){
     hint.textContent = isLoggedIn() ? '点击进度条或产品名即可编辑 →' : '悬停进度条查看详情';
     teamWrap.classList.remove('show');
   }
+  }catch(e){ console.error('toggleTeamProgress error:', e); }
 }
 
 function buildTeamProgress(){
   const wrap = document.getElementById('teamProgressWrap');
+  if(!wrap) return;
   const currentFilterCat = currentFilter;
   
   // 收集所有批次，按组员分组
   const personMap = {}; // {personName: [{prod, batch}]}
+  if(!Array.isArray(products)){ wrap.innerHTML='<div class="tp-empty">📭 暂无数据</div>'; return; }
   products.forEach(p => {
     if(currentFilterCat !== 'all' && p.cat !== currentFilterCat) return;
     const batches = p.batches || [];
@@ -1185,7 +1189,8 @@ function buildTeamProgress(){
 
     items.forEach(item => {
       const b = item.batch, p = item.prod;
-      const bPct = stagePct(b.stages);
+      const stages = b.stages || [];
+      const bPct = stagePct(stages);
       const bShelved = b.shelved || false;
       
       // 当前阶段
@@ -1193,16 +1198,16 @@ function buildTeamProgress(){
       if(bShelved){
         currStage = '⏸ 已搁置';
       } else {
-        const curr = b.stages.find(s => s.status === 'curr');
+        const curr = stages.find(s => s.status === 'curr');
         if(curr) currStage = curr.s;
-        else if(allDone(b.stages)) currStage = '✓ 完成';
+        else if(allDone(stages)) currStage = '✓ 完成';
         else currStage = '待开始';
       }
       
       // 进度条
-      const total = b.stages.length;
+      const total = stages.length;
       let doneW = 0, currW = 0;
-      b.stages.forEach(s => {
+      stages.forEach(s => {
         if(s.status === 'done') doneW += 100/total;
         else if(s.status === 'curr' && currW === 0) currW = 100/total;
       });
