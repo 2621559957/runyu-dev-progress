@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>产品开发进度 · 甘特图</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#f7f8f5;min-height:100vh;padding:20px 12px}
+.header{max-width:1320px;margin:0 auto 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.header h1{font-size:22px;font-weight:500;color:#1a1a1a}
+.header .meta{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.header .meta .stat{font-size:12px;color:#888}
+.stat b{color:#333}
+.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:11px;color:#777}
+.legend span{display:flex;align-items:center;gap:4px}
+.legend .dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.dot-done{background:#4caf50}.dot-curr{background:#2196f3}.dot-pend{background:#e0e0e0}.dot-risk{background:#ff7043}
+
+.container{max-width:1320px;margin:0 auto;background:#fff;border-radius:12px;border:0.5px solid #e8e8e8;overflow:hidden}
+.toolbar{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:0.5px solid #eee;background:#fafafa;flex-wrap:wrap}
+.toolbar button{padding:5px 14px;border:0.5px solid #ddd;border-radius:6px;background:#fff;font-size:12px;cursor:pointer;color:#555;transition:all .12s}
+.toolbar button:hover{background:#f0f0f0}
+.toolbar button.active{background:#2196f3;color:#fff;border-color:#2196f3}
+.now-time{font-size:11px;color:#999;margin-left:auto}
+
+.wrap{overflow-x:auto}
+.table{min-width:1100px;width:100%}
+.head-row{display:flex;border-bottom:0.5px solid #eee;background:#fafafa;position:sticky;top:0;z-index:2}
+.head-row .name-col{min-width:230px;width:230px;padding:8px 14px;font-size:12px;font-weight:500;color:#666;display:flex;align-items:flex-end;border-right:0.5px solid #eee;flex-shrink:0}
+.head-row .tl-col{flex:1;display:flex;flex-direction:column}
+.months{display:flex;border-bottom:0.5px solid #eee}
+.months .m{text-align:center;font-size:11px;font-weight:500;color:#888;padding:6px 0;border-right:0.5px solid #f0f0f0}
+.weeks{display:flex}
+.weeks .w{text-align:center;font-size:9px;color:#bbb;padding:3px 0;border-right:0.5px solid #f5f5f5}
+.today-line{position:absolute;top:0;bottom:0;width:1.5px;background:#ff5252;z-index:3;pointer-events:none}
+.today-label{position:absolute;top:4px;left:-14px;font-size:9px;color:#ff5252;font-weight:500;white-space:nowrap}
+
+.cat-row{display:flex;background:#f8f9fa;cursor:pointer;user-select:none;transition:background .12s}
+.cat-row:hover{background:#f0f2f5}
+.cat-row .name-col{min-width:230px;width:230px;padding:9px 14px;font-size:13px;font-weight:500;color:#444;display:flex;align-items:center;gap:8px;border-right:0.5px solid #eee;flex-shrink:0}
+.cat-row .name-col .arrow{font-size:10px;transition:transform .2s;color:#aaa}
+.cat-row .empty{flex:1;border-bottom:0.5px solid #eee}
+.cat-count{font-size:10px;color:#aaa;font-weight:400;margin-left:auto}
+.cat-row.collapsed .arrow{transform:rotate(-90deg)}
+
+.prod-row{display:flex;border-bottom:0.5px solid #f5f5f5;transition:background .12s}
+.prod-row:hover{background:#fafcfe}
+.prod-row.hidden{display:none}
+.prod-row .name-col{min-width:230px;width:230px;padding:6px 14px;display:flex;align-items:center;gap:8px;border-right:0.5px solid #eee;flex-shrin:0;font-size:12px;color:#333}
+.prod-row .name-col .pn{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prod-row .name-col .person{font-size:10px;color:#aaa;flex-shrink:0}
+.prod-row .risk-dot{width:6px;height:6px;border-radius:50%;background:#ff7043;flex-shrink:0}
+.prod-row .bars-col{flex:1;position:relative;height:32px;display:flex;align-items:center}
+.bar-stage{position:absolute;height:18px;border-radius:3px;top:7px;cursor:pointer;transition:transform .1s,box-shadow .1s}
+.bar-stage:hover{transform:scaleY(1.15);box-shadow:0 1px 4px rgba(0,0,0,0.12);z-index:10}
+.bar-done{background:#4caf50}.bar-curr{background:#2196f3}.bar-pend{background:#e8e8e8;border:0.5px dashed #ccc}
+.bar-risk{background:#ff7043}
+
+.popup{position:fixed;background:#fff;border:0.5px solid #ddd;border-radius:8px;padding:10px 14px;font-size:12px;color:#333;box-shadow:0 4px 16px rgba(0,0,0,0.1);z-index:100;pointer-events:none;opacity:0;transition:opacity .15s;max-width:220px}
+.popup.show{opacity:1}
+.popup .p-title{font-weight:500;margin-bottom:4px}
+.popup .p-info{font-size:11px;color:#888}
+
+.footer{max-width:1320px;margin:16px auto;text-align:center;font-size:11px;color:#bbb}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>产品开发进度 · 甘特图</h1>
+  <div class="meta">
+    <div class="stat"><b>13</b> 产品</div>
+    <div class="stat"><b style="color:#4caf50">1</b> 已完成</div>
+    <div class="stat"><b style="color:#2196f3">9</b> 进行中</div>
+    <div class="stat"><b style="color:#ff7043">3</b> 有风险</div>
+  </div>
+  <div class="legend">
+    <span><span class="dot dot-done"></span>已完成</span>
+    <span><span class="dot dot-curr"></span>进行中</span>
+    <span><span class="dot dot-pend"></span>待开始</span>
+    <span><span class="dot dot-risk"></span>风险项</span>
+  </div>
+</div>
+
+<div class="container">
+  <div class="toolbar">
+    <button class="active" data-filter="all">全部</button>
+    <button data-filter="相框">相框</button>
+    <button data-filter="柜子">柜子</button>
+    <button data-filter="PET">PET收纳盒</button>
+    <button data-filter="risk">仅看风险</button>
+    <span class="now-time">当前: 2026-06-22</span>
+  </div>
+  <div class="wrap" id="ganttWrap"></div>
+</div>
+<div class="footer">点击色条查看详情 · 横向滚动查看更多月份</div>
+<div class="popup" id="popup"></div>
+
+<script>
+// === Product Data ===
+const products = [
+  {cat:"相框",sub:"新款式",name:"悬浮框",person:"陈工",risk:false,riskNote:"",stages:[
+    {s:"调研立项",st:"2026-05-10",et:"2026-05-20",status:"done"},
+    {s:"设计打样",st:"2026-05-28",et:"2026-06-08",status:"done"},
+    {s:"供应商确认",st:"2026-06-08",et:"2026-06-15",status:"done"},
+    {s:"样品测试",st:"2026-06-15",et:"2026-06-25",status:"curr"},
+    {s:"大货生产",st:"2026-07-05",et:"2026-07-18",status:"pend"},
+    {s:"品质验货",st:"2026-07-18",et:"2026-07-25",status:"pend"},
+    {s:"FBA发货",st:"2026-07-25",et:"2026-08-01",status:"pend"}
+  ]},
+  {cat:"相框",sub:"新款式",name:"球衣框",person:"陈工",risk:true,riskNote:"授权谈判周期不可控",stages:[
+    {s:"调研立项",st:"2026-05-15",et:"2026-05-25",status:"done"},
+    {s:"设计打样",st:"2026-06-01",et:"2026-06-25",status:"curr"},
+    {s:"供应商确认",st:"2026-07-01",et:"2026-07-10",status:"pend"},
+    {s:"样品测试",st:"2026-07-15",et:"2026-07-28",status:"pend"},
+    {s:"大货生产",st:"2026-08-01",et:"2026-08-15",status:"pend"},
+    {s:"品质验货",st:"2026-08-15",et:"2026-08-25",status:"pend"},
+    {s:"FBA发货",st:"2026-08-25",et:"2026-09-05",status:"pend"}
+  ]},
+  {cat:"相框",sub:"照片墙",name:"复古照片墙",person:"林工",risk:true,riskNote:"做旧良率~75%需驻厂",stages:[
+    {s:"调研立项",st:"2026-05-20",et:"2026-05-28",status:"done"},
+    {s:"设计打样",st:"2026-06-01",et:"2026-06-08",status:"done"},
+    {s:"供应商确认",st:"2026-06-10",et:"2026-06-18",status:"done"},
+    {s:"样品测试",st:"2026-06-20",et:"2026-06-28",status:"curr"},
+    {s:"大货生产",st:"2026-07-10",et:"2026-07-22",status:"pend"},
+    {s:"品质验货",st:"2026-07-20",et:"2026-07-30",status:"pend"},
+    {s:"FBA发货",st:"2026-07-30",et:"2026-08-08",status:"pend"}
+  ]},
+  {cat:"相框",sub:"照片墙",name:"装饰照片墙",person:"王工",risk:false,riskNote:"",stages:[
+    {s:"调研立项",st:"2026-05-25",et:"2026-06-05",status:"done"},
+    {s:"设计打样",st:"2026-06-10",et:"2026-06-25",status:"curr"},
+    {s:"供应商确认",st:"2026-06-28",et:"2026-07-05",status:"pend"},
+    {s:"样品测试",st:"2026-07-10",et:"2026-07-22",status:"pend"},
+    {s:"大货生产",st:"2026-07-25",et:"2026-08-08",status:"pend"},
+    {s:"品质验货",st:"2026-08-05",et:"2026-08-15",status:"pend"},
+    {s:"FBA发货",st:"2026-08-15",et:"2026-08-25",status:"pend"}
+  ]},
+  {cat:"相框",sub:"线条",name:"密度板线条",person:"赵工",risk:false,riskNote:"",stages:[
+    {s:"调研立项",st:"2026-04-20",et:"2026-04-30",status:"done"},
+    {s:"设计打样",st:"2026-05-01",et:"2026-05-10",status:"done"},
+    {s:"供应商确认",st:"2026-05-10",et:"2026-05-18",status:"done"},
+    {s:"样品测试",st:"2026-05-20",et:"2026-05-30",status:"done"},
+    {s:"大货生产",st:"2026-06-01",et:"2026-06-15",status:"done"},
+    {s:"品质验货",st:"2026-06-20",et:"2026-06-30",status:"curr"},
+    {s:"FBA发货",st:"2026-07-03",et:"2026-07-15",status:"pend"}
+  ]},
+  {cat:"相框",sub:"线条",name:"发泡线条",person:"赵工",risk:false,riskNote:"",stages:[
+    {s:"调研立项",st:"2026-04-15",et:"2026-04-25",status:"done"},
+    {s:"设计打样",st:"2026-04-28",et:"2026-05-08",status:"done"},
+    {s:"供应商确认",st:"2026-05-05",et:"2026-05-15",status:"done"},
+    {s:"样品测试",st:"2026-05-15",et:"2026-05-25",status:"done"},
+    {s:"大货生产",st:"2026-06-01",et:"2026-06-12",status:"done"},
+    {s:"品质验货",st:"2026-06-12",et:"2026-06-18",status:"done"},
+    {s:"FBA发货",st:"2026-06-18",et:"2026-06-28",status:"done"}
+  ]},
+  {cat:"相框",sub:"线条",name:"实木线条",person:"赵工",risk:true,riskNote:"供应商未定 deadline6.30",stages:[
+    {s:"调研立项",st:"2026-05-10",et:"2026-05-20",status:"done"},
+    {s:"设计打样",st:"2026-06-10",et:"2026-06-25",status:"curr"},
+    {s:"供应商确认",st:"2026-06-25",et:"2026-07-05",status:"pend"},
+    {s:"样品测试",st:"2026-07-10",et:"2026-07-25",status:"pend"},
+    {s:"大货生产",st:"2026-08-05",et:"2026-08-20",status:"pend"},
+    {s:"品质验货",st:"2026-08-20",et:"2026-08-30",status:"pend"},
+    {s:"FBA发货",st:"2026-08-30",et:"2026-09-10",status:"pend"}
+  ]},
+  {cat:"相框",sub:"",name:"树脂相框",person:"王工",risk:true,riskNote:"模具费评估中",stages:[
+    {s:"调研立项",st:"2026-06-10",et:"2026-06-25",status:"curr"},
+    {s:"设计打样",st:"2026-07-01",et:"2026-07-15",status:"pend"},
+    {s:"供应商确认",st:"2026-07-20",et:"2026-07-30",status:"pend"},
+    {s:"样品测试",st:"2026-08-10",et:"2026-08-25",status:"pend"},
+    {s:"大货生产",st:"2026-09-01",et:"2026-09-15",status:"pend"},
+    {s:"品质验货",st:"2026-09-15",et:"2026-09-25",status:"pend"},
+    {s:"FBA发货",st:"2026-09-25",et:"2026-10-05",status:"pend"}
+  ]},
+  // 柜子
+  {cat:"柜子",sub:"",name:"书柜",person:"张工",risk:false,riskNote:"",stages:[
+    {s:"调研立项",st:"2026-05-15",et:"2026-05-28",status:"done"},
+    {s:"设计打样",st:"2026-05-30",et:"2026-06-12",status:"done"},
+    {s:"供应商确认",st:"2026-06-15",et:"2026-06-25",status:"curr"},
+    {s:"样品测试",st:"2026-07-01",et:"2026-07-15",status:"pend"},
+    {s:"大货生产",st:"2026-07-20",et:"2026-08-05",status:"pend"},
+    {s:"品质验货",st:"2026-08-05",et:"2026-08-15",status:"pend"},
+    {s:"FBA发货",st:"2026-08-15",et:"2026-08-25",status:"pend"}
+  ]},
+  {cat:"柜子",sub:"",name:"置物架",person:"张工",risk:true,riskNote:"承重结构推高BOM",stages:[
+    {s:"调研立项",st:"2026-05-20",et:"2026-06-05",status:"done"},
+    {s:"设计打样",st:"2026-06-10",et:"2026-06-25",status:"curr"},
+    {s:"供应商确认",st:"2026-06-28",et:"2026-07-05",status:"pend"},
+    {s:"样品测试",st:"2026-07-10",et:"2026-07-22",status:"pend"},
+    {s:"大货生产",st:"2026-07-28",et:"2026-08-10",status:"pend"},
+    {s:"品质验货",st:"2026-08-10",et:"2026-08-20",status:"pend"},
+    {s:"FBA发货",st:"2026-08-20",et:"2026-08-30",status:"pend"}
+  ]},
+  {cat:"柜子",sub:"",name:"床头柜",person:"张工",risk:false,riskNote:"",stages:[
+    {s:"调研立项",st:"2026-05-10",et:"2026-05-22",status:"done"},
+    {s:"设计打样",st:"2026-05-25",et:"2026-06-08",status:"done"},
+    {s:"供应商确认",st:"2026-06-10",et:"2026-06-18",status:"done"},
+    {s:"样品测试",st:"2026-06-18",et:"2026-06-28",status:"curr"},
+    {s:"大货生产",st:"2026-07-08",et:"2026-07-22",status:"pend"},
+    {s:"品质验货",st:"2026-07-22",et:"2026-08-01",status:"pend"},
+    {s:"FBA发货",st:"2026-08-01",et:"2026-08-12",status:"pend"}
+  ]},
+  {cat:"柜子",sub:"",name:"雕刻板",person:"王工",risk:true,riskNote:"图案版权待确认",stages:[
+    {s:"调研立项",st:"2026-05-18",et:"2026-05-30",status:"done"},
+    {s:"设计打样",st:"2026-06-08",et:"2026-06-22",status:"curr"},
+    {s:"供应商确认",st:"2026-06-28",et:"2026-07-05",status:"pend"},
+    {s:"样品测试",st:"2026-07-10",et:"2026-07-22",status:"pend"},
+    {s:"大货生产",st:"2026-07-28",et:"2026-08-10",status:"pend"},
+    {s:"品质验货",st:"2026-08-10",et:"2026-08-20",status:"pend"},
+    {s:"FBA发货",st:"2026-08-20",et:"2026-08-30",status:"pend"}
+  ]},
+  // PET
+  {cat:"PET",sub:"",name:"小收纳盒",person:"刘工",risk:true,riskNote:"模具费+原料价双重谈判",stages:[
+    {s:"调研立项",st:"2026-05-25",et:"2026-06-10",status:"done"},
+    {s:"设计打样",st:"2026-06-10",et:"2026-06-25",status:"curr"},
+    {s:"供应商确认",st:"2026-07-05",et:"2026-07-15",status:"pend"},
+    {s:"样品测试",st:"2026-07-20",et:"2026-08-05",status:"pend"},
+    {s:"大货生产",st:"2026-08-10",et:"2026-08-25",status:"pend"},
+    {s:"品质验货",st:"2026-08-25",et:"2026-09-05",status:"pend"},
+    {s:"FBA发货",st:"2026-09-05",et:"2026-09-15",status:"pend"}
+  ]}
+];
+
+const startDate = new Date("2026-04-20");
+const endDate = new Date("2026-10-05");
+const totalDays = Math.ceil((endDate - startDate) / (1000*60*60*24));
+const monthNames = ["5月","6月","7月","8月","9月"];
+const monthDays = [31,30,31,31,30]; // May-Sep days
+
+function dateToX(dateStr) {
+  const d = new Date(dateStr);
+  const days = Math.ceil((d - startDate) / (1000*60*60*24));
+  return (days / totalDays) * 100;
+}
+
+function fmtDate(s) { return s.slice(5); }
+
+const popup = document.getElementById("popup");
+
+function showPopup(e, stage, product) {
+  popup.innerHTML = `<div class="p-title">${product.name} · ${stage.s}</div><div class="p-info">${fmtDate(stage.st)} → ${fmtDate(stage.et)} · ${stage.status==="done"?"已完成":stage.status==="curr"?"进行中":"待开始"}</div>${product.riskNote ? '<div class="p-info" style="color:#ff7043;margin-top:3px">⚠ '+product.riskNote+'</div>':''}`;
+  popup.className = "popup show";
+  popup.style.left = (e.clientX+12)+"px";
+  popup.style.top = (e.clientY-50)+"px";
+}
+function hidePopup(){popup.className="popup";}
+
+function buildGantt(filter) {
+  const wrap = document.getElementById("ganttWrap");
+  let html = '<div class="table"><div class="head-row"><div class="name-col">产品</div><div class="tl-col">';
+  html += '<div class="months">'+monthNames.map((m,i)=>'<div class="m" style="width:'+(monthDays[i]/totalDays*100)+'%">'+m+'</div>').join('')+'</div>';
+  html += '</div></div>';
+
+  const cats = ["相框","柜子","PET"];
+  let idx = 0;
+  cats.forEach(cat => {
+    const catProds = products.filter(p => p.cat === cat);
+    if (filter !== "all" && filter !== "risk" && cat !== filter) return;
+    const visible = filter === "risk" ? catProds.filter(p=>p.risk) : catProds;
+    if (visible.length === 0) return;
+    const catId = "cat_"+idx;
+    html += `<div class="cat-row" onclick="toggleCat('${catId}')" data-catid="${catId}">
+      <div class="name-col"><span class="arrow">▼</span>${cat}<span class="cat-count">${visible.length}项</span></div>
+      <div class="empty"></div>
+    </div>`;
+    visible.forEach((p,i)=>{
+      const rowId = catId+"_r"+i;
+      html += `<div class="prod-row" data-catid="${catId}" id="${rowId}">
+        <div class="name-col" title="${p.name} · ${p.person} · ${p.riskNote||'无风险'}">
+          <span class="pn">${p.sub?p.sub+"·":""}${p.name}</span>
+          <span class="person">${p.person}</span>
+          ${p.risk?'<span class="risk-dot" title="'+p.riskNote+'"></span>':''}
+        </div>
+        <div class="bars-col">`;
+      p.stages.forEach(stg=>{
+        const x = dateToX(stg.st);
+        const w = dateToX(stg.et) - x;
+        let cls = "bar-stage ";
+        if(stg.status==="done") cls+="bar-done";
+        else if(stg.status==="curr") cls+="bar-curr";
+        else cls+="bar-pend";
+        if(p.risk && stg.status==="pend") cls+=" bar-risk";
+        html += `<div class="${cls}" style="left:${x}%;width:${Math.max(w,0.5)}%" title="${stg.s}: ${fmtDate(stg.st)}→${fmtDate(stg.et)}" data-stage="${stg.s}" onmouseenter="showPopup(event,${JSON.stringify(stg).replace(/"/g,'&quot;')},${JSON.stringify({name:p.name,riskNote:p.riskNote}).replace(/"/g,'&quot;')})" onmouseleave="hidePopup()">&nbsp;</div>`;
+      });
+      html += '</div></div>';
+    });
+    idx++;
+  });
+  wrap.innerHTML = html;
+}
+
+function toggleCat(catId) {
+  const row = document.querySelector(`.cat-row[data-catid="${catId}"]`);
+  row.classList.toggle("collapsed");
+  document.querySelectorAll(`.prod-row[data-catid="${catId}"]`).forEach(r => r.classList.toggle("hidden"));
+}
+
+document.querySelectorAll(".toolbar button").forEach(btn => {
+  btn.addEventListener("click", function(){
+    document.querySelectorAll(".toolbar button").forEach(b=>b.classList.remove("active"));
+    this.classList.add("active");
+    buildGantt(this.dataset.filter);
+  });
+});
+
+buildGantt("all");
+</script>
+</body>
+</html>

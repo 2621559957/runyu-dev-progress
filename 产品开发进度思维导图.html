@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>产品开发进度 · 六月排期（含流程节点）</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#f4f5f0;min-height:100vh;padding:24px 12px 40px}
+  .map{max-width:1180px;margin:0 auto;background:#fff;border-radius:18px;box-shadow:0 4px 32px rgba(0,0,0,0.06);padding:40px 32px 28px}
+  h1{text-align:center;font-size:25px;font-weight:800;color:#1a1a1a;margin-bottom:4px}
+  .sub{text-align:center;font-size:12px;color:#aaa;margin-bottom:6px}
+  .bar{display:flex;justify-content:center;gap:22px;margin-bottom:30px;flex-wrap:wrap}
+  .bar .it{display:flex;align-items:center;gap:5px;font-size:11px;color:#777}
+  .d{width:9px;height:9px;border-radius:50%}
+  .dg{background:#4caf50}.db{background:#2196f3}.dy{background:#ff9800}.do{background:#ff7043}
+  .cols{display:flex;gap:18px;justify-content:center}
+  .col{flex:1;max-width:380px;display:flex;flex-direction:column;align-items:center}
+  .ch{display:flex;flex-direction:column;align-items:center;margin-bottom:4px}
+  .lbl{display:inline-flex;align-items:center;gap:7px;font-size:15px;font-weight:700;padding:9px 20px;border-radius:11px;cursor:pointer;user-select:none;transition:.15s}
+  .lbl:hover{transform:translateY(-1px);box-shadow:0 3px 12px rgba(0,0,0,0.08)}
+  .ar{font-size:10px;transition:.2s}.ar.fd{transform:rotate(-90deg)}
+  .lf{background:#fff4eb;color:#c56a2e;border:2px solid #f0c8a0}
+  .lc{background:#eaf4fa;color:#2c6e9c;border:2px solid #b8d8f0}
+  .lp{background:#f3ecf9;color:#6b3fa0;border:2px solid #d0b8f0}
+  .mt{font-size:10px;color:#bbb;margin-top:2px}
+  .kids{display:flex;flex-direction:column;width:100%;margin-top:4px}
+  .kids.fd{display:none}
+  .sg{font-size:11px;font-weight:700;color:#999;padding:8px 12px 2px;margin-top:6px;display:flex;align-items:center;gap:5px}
+  .sg::before{content:'';width:4px;height:12px;border-radius:2px}
+  .sf::before{background:#e0a882}.sc::before{background:#82b4d4}.sp::before{background:#a882d4}
+  .card{width:100%;background:#fafafa;border-radius:9px;padding:9px 12px;margin-bottom:5px;border:1px solid #eee;cursor:pointer;transition:.15s}
+  .card:hover{box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+  .r1{display:flex;align-items:center;justify-content:space-between}
+  .pn{font-size:13px;font-weight:600;color:#333}
+  .bgs{display:flex;gap:5px;align-items:center}
+  .bp{font-size:9px;font-weight:600;padding:2px 7px;border-radius:3px;letter-spacing:.3px}
+  .bg{background:#e8f5e9;color:#2e7d32}.bb{background:#e3f2fd;color:#1565c0}
+  .by{background:#fff3e0;color:#e65100}.br{background:#fbe9e7;color:#bf360c}
+  .sd{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  .sg{background:#4caf50}.sy{background:#ff9800}.sr{background:#f44336}
+
+  .dt{display:none;margin-top:8px;padding-top:8px;border-top:1px dashed #e0e0e0}
+  .dt.op{display:block}
+
+  /* Meta info section */
+  .meta{display:flex;flex-wrap:wrap;gap:6px 14px;margin-bottom:8px;padding:7px 10px;background:#f5f5f5;border-radius:6px;font-size:10px}
+  .meta .mi{display:flex;align-items:center;gap:4px;color:#777}
+  .meta .mi .mk{color:#aaa;font-size:9px}
+  .meta .mi .mv{color:#444;font-weight:500}
+  .meta .risk{display:flex;align-items:flex-start;gap:4px;color:#d84315;font-size:10px;margin-top:2px;width:100%}
+  .meta .risk .rk{color:#e65100;font-size:9px;flex-shrink:0}
+  .meta .risk .rv{color:#bf360c;font-weight:500}
+
+  /* Timeline */
+  .tl{display:flex;flex-direction:column;gap:3px;margin-top:6px}
+  .step{display:flex;align-items:center;gap:8px;font-size:10px;padding:2px 0}
+  .step .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  .dot.done{background:#4caf50}.dot.curr{background:#2196f3;box-shadow:0 0 0 3px rgba(33,150,243,0.25)}.dot.pend{background:#ddd}
+  .st{flex:1;color:#555}.dt2{font-size:9px;color:#999;white-space:nowrap}
+  .st.dim{color:#bbb}.dt2.dim{color:#ccc}
+  .tlh{margin-bottom:3px;font-size:9px;font-weight:700;color:#bbb;letter-spacing:1px;text-transform:uppercase}
+
+  .leg{margin-top:32px;padding-top:18px;border-top:1px solid #eee}
+  .lt{text-align:center;font-size:11px;font-weight:700;color:#aaa;margin-bottom:8px}
+  .lr{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;font-size:10px;color:#888}
+  .lr span{display:flex;align-items:center;gap:4px}
+  .ft{text-align:center;margin-top:18px;font-size:10px;color:#ccc}
+</style>
+</head>
+<body>
+<div class="map">
+  <h1>产品开发进度</h1>
+  <p class="sub">六月排期 · 13个子项 · 点击展开详情（负责人 + 备注 + 流程节点）</p>
+  <div class="bar">
+    <div class="it"><span class="d dg"></span>已完成/即将上线 3项</div>
+    <div class="it"><span class="d db"></span>打样/生产 5项</div>
+    <div class="it"><span class="d dy"></span>设计/测试 3项</div>
+    <div class="it"><span class="d do"></span>调研/寻源 2项</div>
+  </div>
+
+  <div class="cols">
+
+<!-- ==================== 相框 ==================== -->
+<div class="col">
+<div class="ch"><div class="lbl lf" onclick="tCat(this,'c0')"><span class="ar" id="a0">▼</span>相框</div><div class="mt">核心品类 · 10个SKU</div></div>
+<div class="kids" id="c0">
+
+<div class="sg sf">新款式</div>
+
+<!-- 悬浮框 -->
+<div class="card" onclick="tD(this)"><div class="r1"><span class="pn">悬浮框</span><div class="bgs"><span class="bp by">设计打样</span><span class="sd sy"></span></div></div>
+<div class="dt">
+<div class="meta">
+  <div class="mi"><span class="mk">负责人</span><span class="mv">开发二组 · 陈工</span></div>
+  <div class="mi"><span class="mk">当前节点</span><span class="mv">设计打样中</span></div>
+  <div class="mi"><span class="mk">备注</span><span class="mv">新品立项，定位中高端悬浮展示框，竞品参考 MCS 悬浮系列</span></div>
+</div>
+<div class="tl">
+<div class="tlh">流程时间线</div>
+<div class="step"><span class="dot done"></span><span class="st">调研立项</span><span class="dt2">✓ 6.5</span></div>
+<div class="step"><span class="dot curr"></span><span class="st">设计打样</span><span class="dt2">→ 6.28</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">供应商确认</span><span class="dt2 dim">7.8</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">样品测试</span><span class="dt2 dim">7.20</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">大货生产</span><span class="dt2 dim">8.5</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">品质验货</span><span class="dt2 dim">8.12</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">FBA发货</span><span class="dt2 dim">8.18</span></div>
+</div></div></div>
+
+<!-- 球衣框 -->
+<div class="card" onclick="tD(this)"><div class="r1"><span class="pn">球衣框</span><div class="bgs"><span class="bp by">设计打样</span><span class="sd sy"></span></div></div>
+<div class="dt">
+<div class="meta">
+  <div class="mi"><span class="mk">负责人</span><span class="mv">开发二组 · 陈工</span></div>
+  <div class="mi"><span class="mk">当前节点</span><span class="mv">设计打样中</span></div>
+  <div class="mi"><span class="mk">备注</span><span class="mv">对标 BCW / MCS 球衣展示框，主打性价比路线</span></div>
+</div>
+<div class="tl">
+<div class="tlh">流程时间线</div>
+<div class="step"><span class="dot done"></span><span class="st">调研立项</span><span class="dt2">✓ 6.8</span></div>
+<div class="step"><span class="dot curr"></span><span class="st">设计打样</span><span class="dt2">→ 7.2</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">供应商确认</span><span class="dt2 dim">7.12</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">样品测试</span><span class="dt2 dim">7.25</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">大货生产</span><span class="dt2 dim">8.10</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">品质验货</span><span class="dt2 dim">8.17</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">FBA发货</span><span class="dt2 dim">8.22</span></div>
+</div></div></div>
+
+<div class="sg sf">照片墙</div>
+
+<!-- 复古照片墙 -->
+<div class="card" onclick="tD(this)"><div class="r1"><span class="pn">复古照片墙</span><div class="bgs"><span class="bp bb">样品测试</span><span class="sd sy"></span></div></div>
+<div class="dt">
+<div class="meta">
+  <div class="mi"><span class="mk">负责人</span><span class="mv">开发一组 · 林工</span></div>
+  <div class="mi"><span class="mk">当前节点</span><span class="mv">第三版样品在途，等待确认</span></div>
+</div>
+<div class="meta" style="background:#fff5f0"><div class="risk"><span class="rk">⚠ 风险</span><span class="rv">做旧工艺良率偏低（~75%），需驻厂盯产</span></div></div>
+<div class="tl"><div class="tlh">流程时间线</div>
+<div class="step"><span class="dot done"></span><span class="st">调研立项</span><span class="dt2">✓ 5.20</span></div>
+<div class="step"><span class="dot done"></span><span class="st">设计打样</span><span class="dt2">✓ 6.5</span></div>
+<div class="step"><span class="dot done"></span><span class="st">供应商确认</span><span class="dt2">✓ 6.15</span></div>
+<div class="step"><span class="dot curr"></span><span class="st">样品测试</span><span class="dt2">→ 6.25</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">大货生产</span><span class="dt2 dim">7.10</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">品质验货</span><span class="dt2 dim">7.18</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">FBA发货</span><span class="dt2 dim">7.25</span></div>
+</div></div></div>
+
+<!-- 装饰照片墙 -->
+<div class="card" onclick="tD(this)"><div class="r1"><span class="pn">装饰照片墙</span><div class="bgs"><span class="bp by">设计评审</span><span class="sd sy"></span></div></div>
+<div class="dt">
+<div class="meta">
+  <div class="mi"><span class="mk">负责人</span><span class="mv">设计组 · 王工</span></div>
+  <div class="mi"><span class="mk">当前节点</span><span class="mv">竞品分析完成，进入结构设计</span></div>
+  <div class="mi"><span class="mk">备注</span><span class="mv">对标 BSR 前5款，主打差异化材质组合</span></div>
+</div>
+<div class="tl"><div class="tlh">流程时间线</div>
+<div class="step"><span class="dot done"></span><span class="st">调研立项</span><span class="dt2">✓ 6.2</span></div>
+<div class="step"><span class="dot curr"></span><span class="st">设计打样</span><span class="dt2">→ 6.30</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">供应商确认</span><span class="dt2 dim">7.10</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">样品测试</span><span class="dt2 dim">7.22</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">大货生产</span><span class="dt2 dim">8.8</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">品质验货</span><span class="dt2 dim">8.15</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">FBA发货</span><span class="dt2 dim">8.20</span></div>
+</div></div></div>
+
+<div class="sg sf">线条</div>
+
+<!-- 密度板 -->
+<div class="card" onclick="tD(this)"><div class="r1"><span class="pn">密度板</span><div class="bgs"><span class="bp bg">即将上线</span><span class="sd sg"></span></div></div>
+<div class="dt">
+<div class="meta">
+  <div class="mi"><span class="mk">负责人</span><span class="mv">开发二组 · 陈工</span></div>
+  <div class="mi"><span class="mk">当前节点</span><span class="mv">美西仓已签收，今日 Listing 上线</span></div>
+  <div class="mi"><span class="mk">备注</span><span class="mv">6款尺寸颜色组合，首批试跑2000套，走美森正班</span></div>
+</div>
+<div class="tl"><div class="tlh">流程时间线</div>
+<div class="step"><span class="dot done"></span><span class="st">调研立项</span><span class="dt2">✓ 4.15</span></div>
+<div class="step"><span class="dot done"></span><span class="st">设计打样</span><span class="dt2">✓ 4.28</span></div>
+<div class="step"><span class="dot done"></span><span class="st">供应商确认</span><span class="dt2">✓ 5.5</span></div>
+<div class="step"><span class="dot done"></span><span class="st">样品测试</span><span class="dt2">✓ 5.18</span></div>
+<div class="step"><span class="dot done"></span><span class="st">大货生产</span><span class="dt2">✓ 5.25</span></div>
+<div class="step"><span class="dot done"></span><span class="st">品质验货</span><span class="dt2">✓ 6.8</span></div>
+<div class="step"><span class="dot done"></span><span class="st">FBA发货</span><span class="dt2">✓ 6.10</span></div>
+<div class="step"><span class="dot curr"></span><span class="st">Listing上线</span><span class="dt2">→ 6.22</span></div>
+</div></div></div>
+
+<!-- 发泡 -->
+<div class="card" onclick="tD(this)"><div class="r1"><span class="pn">发泡</span><div class="bgs"><span class="bp bb">大货生产</span><span class="sd sg"></span></div></div>
+<div class="dt">
+<div class="meta">
+  <div class="mi"><span class="mk">负责人</span><span class="mv">供应链组 · 赵工</span></div>
+  <div class="mi"><span class="mk">当前节点</span><span class="mv">模具已确认，大货排产中</span></div>
+  <div class="mi"><span class="mk">备注</span><span class="mv">单款4色，首批3000套，惠州工厂，6.25中期验货</span></div>
+</div>
+<div class="tl"><div class="tlh">流程时间线</div>
+<div class="step"><span class="dot done"></span><span class="st">调研立项</span><span class="dt2">✓ 4.20</span></div>
+<div class="step"><span class="dot done"></span><span class="st">设计打样</span><span class="dt2">✓ 5.5</span></div>
+<div class="step"><span class="dot done"></span><span class="st">供应商确认</span><span class="dt2">✓ 5.12</span></div>
+<div class="step"><span class="dot done"></span><span class="st">样品测试</span><span class="dt2">✓ 5.25</span></div>
+<div class="step"><span class="dot curr"></span><span class="st">大货生产</span><span class="dt2">→ 6.25</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">品质验货</span><span class="dt2 dim">7.2</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">FBA发货</span><span class="dt2 dim">7.8</span></div>
+</div></div></div>
+
+<!-- 实木 -->
+<div class="card" onclick="tD(this)"><div class="r1"><span class="pn">实木</span><div class="bgs"><span class="bp br">寻源打样</span><span class="sd sr"></span></div></div>
+<div class="dt">
+<div class="meta">
+  <div class="mi"><span class="mk">负责人</span><span class="mv">开发一组 · 林工</span></div>
+  <div class="mi"><span class="mk">当前节点</span><span class="mv">供应商筛选中，已联系4家工厂</span></div>
+</div>
+<div class="meta" style="background:#fff5f0"><div class="risk"><span class="rk">⚠ 风险</span><span class="rv">6.30前必须定厂！实木成本偏高，需核算利润率是否达标</span></div></div>
+<div class="tl"><div class="tlh">流程时间线</div>
+<div class="step"><span class="dot done"></span><span class="st">调研立项</span><span class="dt2">✓ 6.5</span></div>
+<div class="step"><span class="dot curr"></span><span class="st">供应商确认</span><span class="dt2">→ 6.30</span></div>
+<div class="step"><span class="dot curr"></span><span class="st">设计打样</span><span class="dt2">→ 7.5</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">样品测试</span><span class="dt2 dim">7.20</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">大货生产</span><span class="dt2 dim">8.15</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">品质验货</span><span class="dt2 dim">8.25</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">FBA发货</span><span class="dt2 dim">8.28</span></div>
+</div></div></div>
+
+<div class="sg sf">树脂相框 ✨新</div>
+
+<!-- 树脂相框 -->
+<div class="card" onclick="tD(this)"><div class="r1"><span class="pn">树脂相框</span><div class="bgs"><span class="bp br">调研立项</span><span class="sd sy"></span></div></div>
+<div class="dt">
+<div class="meta">
+  <div class="mi"><span class="mk">负责人</span><span class="mv">开发三组 · 刘工</span></div>
+  <div class="mi"><span class="mk">当前节点</span><span class="mv">调研立项进行中</span></div>
+  <div class="mi"><span class="mk">备注</span><span class="mv">新品类探索，评估树脂材质在相框品类的差异化竞争力</span></div>
+</div>
+<div class="tl"><div class="tlh">流程时间线</div>
+<div class="step"><span class="dot curr"></span><span class="st">调研立项</span><span class="dt2">→ 6.25</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">设计打样</span><span class="dt2 dim">7.10</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">供应商确认</span><span class="dt2 dim">7.20</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">样品测试</span><span class="dt2 dim">8.5</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">大货生产</span><span class="dt2 dim">8.25</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">品质验货</span><span class="dt2 dim">9.2</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">FBA发货</span><span class="dt2 dim">9.8</span></div>
+</div></div></div>
+
+</div></div>
+
+<!-- ==================== 柜子 ==================== -->
+<div class="col">
+<div class="ch"><div class="lbl lc" onclick="tCat(this,'c1')"><span class="ar" id="a1">▼</span>柜子</div><div class="mt">增长品类 · 4个SKU</div></div>
+<div class="kids" id="c1">
+
+<!-- 书柜 -->
+<div class="card" onclick="tD(this)"><div class="r1"><span class="pn">书柜</span><div class="bgs"><span class="bp br">市场调研</span><span class="sd sy"></span></div></div>
+<div class="dt">
+<div class="meta">
+  <div class="mi"><span class="mk">负责人</span><span class="mv">市场组 · 张工</span></div>
+  <div class="mi"><span class="mk">当前节点</span><span class="mv">BSR Top20 竞品拆解，数据收尾</span></div>
+  <div class="mi"><span class="mk">备注</span><span class="mv">Floating Shelves 类目，竞品均价 $35-60</span></div>
+</div>
+<div class="tl"><div class="tlh">流程时间线</div>
+<div class="step"><span class="dot curr"></span><span class="st">调研立项</span><span class="dt2">→ 6.20</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">设计打样</span><span class="dt2 dim">7.5</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">供应商确认</span><span class="dt2 dim">7.18</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">样品测试</span><span class="dt2 dim">8.5</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">大货生产</span><span class="dt2 dim">8.25</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">品质验货</span><span class="dt2 dim">9.5</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">FBA发货</span><span class="dt2 dim">9.8</span></div>
+</div></div></div>
+
+<!-- 置物架 -->
+<div class="card" onclick="tD(this)"><div class="r1"><span class="pn">置物架</span><div class="bgs"><span class="bp by">设计评审</span><span class="sd sy"></span></div></div>
+<div class="dt">
+<div class="meta">
+  <div class="mi"><span class="mk">负责人</span><span class="mv">设计组 · 王工</span></div>
+  <div class="mi"><span class="mk">当前节点</span><span class="mv">结构设计初稿完成，等待评审</span></div>
+</div>
+<div class="meta" style="background:#fff5f0"><div class="risk"><span class="rk">⚠ 风险</span><span class="rv">承重结构须优化，可能增加 BOM 成本</span></div></div>
+<div class="tl"><div class="tlh">流程时间线</div>
+<div class="step"><span class="dot done"></span><span class="st">调研立项</span><span class="dt2">✓ 6.5</span></div>
+<div class="step"><span class="dot curr"></span><span class="st">设计打样</span><span class="dt2">→ 6.28</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">供应商确认</span><span class="dt2 dim">7.8</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">样品测试</span><span class="dt2 dim">7.22</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">大货生产</span><span class="dt2 dim">8.10</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">品质验货</span><span class="dt2 dim">8.20</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">FBA发货</span><span class="dt2 dim">8.25</span></div>
+</div></div></div>
+
+<!-- 床头柜 -->
+<div class="card" onclick="tD(this)"><div class="r1"><span class="pn">床头柜</span><div class="bgs"><span class="bp bb">打样中</span><span class="sd sg"></span></div></div>
+<div class="dt">
+<div class="meta">
+  <div class="mi"><span class="mk">负责人</span><span class="mv">供应链组 · 赵工</span></div>
+  <div class="mi"><span class="mk">当前节点</span><span class="mv">供应商已确认，首次打样进行中</span></div>
+  <div class="mi"><span class="mk">备注</span><span class="mv">MDF 材质，设计平板包装结构降低头程运费</span></div>
+</div>
+<div class="tl"><div class="tlh">流程时间线</div>
+<div class="step"><span class="dot done"></span><span class="st">调研立项</span><span class="dt2">✓ 5.25</span></div>
+<div class="step"><span class="dot done"></span><span class="st">设计打样</span><span class="dt2">✓ 6.10</span></div>
+<div class="step"><span class="dot done"></span><span class="st">供应商确认</span><span class="dt2">✓ 6.18</span></div>
+<div class="step"><span class="dot curr"></span><span class="st">样品测试</span><span class="dt2">→ 6.28</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">大货生产</span><span class="dt2 dim">7.15</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">品质验货</span><span class="dt2 dim">7.25</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">FBA发货</span><span class="dt2 dim">7.30</span></div>
+</div></div></div>
+
+<!-- 雕刻板 -->
+<div class="card" onclick="tD(this)"><div class="r1"><span class="pn">雕刻板</span><div class="bgs"><span class="bp by">材质测试</span><span class="sd sg"></span></div></div>
+<div class="dt">
+<div class="meta">
+  <div class="mi"><span class="mk">负责人</span><span class="mv">开发三组 · 刘工</span></div>
+  <div class="mi"><span class="mk">当前节点</span><span class="mv">3种雕刻工艺对比测试中</span></div>
+  <div class="mi"><span class="mk">备注</span><span class="mv">激光雕刻 vs CNC vs 热压，重点对比单件成本和良品率</span></div>
+</div>
+<div class="tl"><div class="tlh">流程时间线</div>
+<div class="step"><span class="dot done"></span><span class="st">调研立项</span><span class="dt2">✓ 6.2</span></div>
+<div class="step"><span class="dot curr"></span><span class="st">设计打样</span><span class="dt2">→ 6.25</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">供应商确认</span><span class="dt2 dim">7.5</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">样品测试</span><span class="dt2 dim">7.18</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">大货生产</span><span class="dt2 dim">8.5</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">品质验货</span><span class="dt2 dim">8.15</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">FBA发货</span><span class="dt2 dim">8.18</span></div>
+</div></div></div>
+
+</div></div>
+
+<!-- ==================== PET 收纳盒 ==================== -->
+<div class="col">
+<div class="ch"><div class="lbl lp" onclick="tCat(this,'c2')"><span class="ar" id="a2">▼</span>PET收纳盒</div><div class="mt">新品类 · 1个SKU</div></div>
+<div class="kids" id="c2">
+
+<!-- 小收纳盒 -->
+<div class="card" onclick="tD(this)"><div class="r1"><span class="pn">小收纳盒</span><div class="bgs"><span class="bp br">可行性调研</span><span class="sd sy"></span></div></div>
+<div class="dt">
+<div class="meta">
+  <div class="mi"><span class="mk">负责人</span><span class="mv">市场组 · 张工 + 开发三组 · 刘工</span></div>
+  <div class="mi"><span class="mk">当前节点</span><span class="mv">竞品调研 + 供应链摸排同步推进</span></div>
+</div>
+<div class="meta" style="background:#fff5f0"><div class="risk"><span class="rk">⚠ 关注</span><span class="rv">PET 模具费高（预估3-5万），原料价格受原油波动影响</span></div></div>
+<div class="tl"><div class="tlh">流程时间线</div>
+<div class="step"><span class="dot curr"></span><span class="st">调研立项</span><span class="dt2">→ 6.30</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">设计打样</span><span class="dt2 dim">7.15</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">供应商确认</span><span class="dt2 dim">7.25</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">模具开模</span><span class="dt2 dim">8.5</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">样品测试</span><span class="dt2 dim">8.25</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">大货生产</span><span class="dt2 dim">9.10</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">品质验货</span><span class="dt2 dim">9.18</span></div>
+<div class="step"><span class="dot pend"></span><span class="st dim">FBA发货</span><span class="dt2 dim">9.22</span></div>
+</div></div></div>
+
+</div></div>
+
+</div><!-- .cols -->
+
+<div class="leg">
+  <div class="lt">图例</div>
+  <div class="lr">
+    <span><span class="bp bg" style="display:inline-block">已完成/上线</span></span>
+    <span><span class="bp bb" style="display:inline-block">打样/生产</span></span>
+    <span><span class="bp by" style="display:inline-block">设计/测试</span></span>
+    <span><span class="bp br" style="display:inline-block">调研/寻源</span></span>
+    <span style="margin-left:4px"><span class="dot done" style="display:inline-block"></span>已完成</span>
+    <span><span class="dot curr" style="display:inline-block"></span>进行中</span>
+    <span><span class="dot pend" style="display:inline-block"></span>待完成</span>
+  </div>
+</div>
+<div class="ft">产品开发部 · 六月第四周 · 13个产品 · 含负责人+流程节点 · 约90个里程碑</div>
+
+</div>
+
+<script>
+function tCat(el,id){document.getElementById(id).classList.toggle('fd');el.querySelector('.ar').classList.toggle('fd')}
+function tD(card){card.querySelector('.dt').classList.toggle('op')}
+</script>
+</body>
+</html>
