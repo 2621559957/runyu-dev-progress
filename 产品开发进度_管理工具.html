@@ -918,8 +918,7 @@ function disableAutoSave(){
   toast('自动保存已关闭')
 }
 
-// 页面加载后显示推送按钮（无需预检，点击时实时连接）
-window.addEventListener('load',()=>{const b=document.getElementById('pushBtn');if(b)b.style.display='';});
+// 推送按钮由 updateAuthUI() 控制（登录后显示）
 
 async function pushSync(){
   const btn=document.getElementById('pushBtn');
