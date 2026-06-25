@@ -631,9 +631,12 @@ function personDisplay(persons){
   return persons[0]+(persons.length>1?' +'+(persons.length-1):'');
 }
 function buildPersonCheckboxes(pid,bid,selected){
-  return getMembers().map(m=>{
+  return getMembers().map((m,i)=>{
     const isChecked=Array.isArray(selected)&&selected.includes(m);
-    return'<label class="mp-item" style="display:flex;align-items:center;gap:6px;padding:3px 4px;cursor:pointer;font-size:11px;border-radius:4px" onmouseover="this.style.background=\'#f1f5f9\'" onmouseout="this.style.background=\'\'"><input type="checkbox" value="'+m+'" '+(isChecked?'checked':'')+' onchange="updBPersons('+pid+','+bid+')" class="person-chk-'+pid+'-'+bid+'"><span>'+m+'</span></label>';
+    const isFirst=Array.isArray(selected)&&selected.length>0&&selected[0]===m;
+    const isCo=isChecked&&!isFirst;
+    const tag=isFirst?'<span style="font-size:9px;color:#fff;background:#3b82f6;border-radius:3px;padding:0 4px;margin-left:4px">主</span>':isCo?'<span style="font-size:9px;color:#fff;background:#8b5cf6;border-radius:3px;padding:0 4px;margin-left:4px">协</span>':'';
+    return'<label class="mp-item" style="display:flex;align-items:center;gap:6px;padding:3px 4px;cursor:pointer;font-size:11px;border-radius:4px" onmouseover="this.style.background=\'#f1f5f9\'" onmouseout="this.style.background=\'\'"><input type="checkbox" value="'+m+'" '+(isChecked?'checked':'')+' onchange="updBPersons('+pid+','+bid+')" class="person-chk-'+pid+'-'+bid+'">'+m+tag+'</label>';
   }).join('');
 }
 function updBPersons(pid,bid){
@@ -641,8 +644,37 @@ function updBPersons(pid,bid){
   if(!b)return;
   const checks=document.querySelectorAll('.person-chk-'+pid+'-'+bid+':checked');
   b.person=Array.from(checks).map(c=>c.value);
+  // 更新触发器显示
+  const wrap=document.querySelector('.person-chk-'+pid+'-'+bid).closest('.multi-person-wrap');
+  if(wrap){
+    wrap.querySelector('.mp-label').textContent=personDisplay(b.person);
+    // 更新主/协标签
+    wrap.querySelectorAll('.mp-item').forEach(lb=>{
+      const existingTag=lb.querySelector('span[style]');
+      if(existingTag) existingTag.remove();
+      const m=lb.textContent.trim();
+      const idx=b.person.indexOf(m);
+      if(idx===0){
+        const t=document.createElement('span');
+        t.style.cssText='font-size:9px;color:#fff;background:#3b82f6;border-radius:3px;padding:0 4px;margin-left:4px';
+        t.textContent='主';lb.appendChild(t);
+      }else if(idx>0){
+        const t=document.createElement('span');
+        t.style.cssText='font-size:9px;color:#fff;background:#8b5cf6;border-radius:3px;padding:0 4px;margin-left:4px';
+        t.textContent='协';lb.appendChild(t);
+      }
+    });
+  }
 }
-// 点击空白处关闭人员下拉
+function togglePersonDD(trigger){
+  const dd=trigger.nextElementSibling;
+  const isOpen=!dd.classList.contains('hidden');
+  // 先关闭所有下拉
+  document.querySelectorAll('.person-dropdown').forEach(d=>d.classList.add('hidden'));
+  // 如果之前是关闭的，则打开
+  if(!isOpen) dd.classList.remove('hidden');
+}
+// 点击空白处关闭人员下拉 + 点击checkbox按钮不关闭
 document.addEventListener('click',function(e){
   if(!e.target.closest('.multi-person-wrap')){
     document.querySelectorAll('.person-dropdown').forEach(d=>d.classList.add('hidden'));
@@ -914,7 +946,7 @@ function openEdit(pid){
       const bTagLabel=bAllDone?'已全部完成':bCurr?'进行中':'未开始';
       batchHTML+=`<div class="batch-card${b.shelved?' shelved':''}">
         <div class="bc-head">
-          <div class="bc-info"><span class="bc-tag ${bTag}">${bTagLabel}</span><input value="${b.name}" onchange="updBName(${p.id},${b.bid},this.value)" placeholder="批次名称"><div class="multi-person-wrap" style="position:relative;display:inline-block;margin-left:6px"><div class="multi-person-trigger" onclick="event.stopPropagation();this.nextElementSibling.classList.toggle('hidden')" style="cursor:pointer;padding:2px 6px;font-size:11px;border:1px solid #d1d5db;border-radius:4px;background:#fff;min-width:90px;display:flex;align-items:center;gap:4px;white-space:nowrap"><span class="mp-label" style="color:#64748b;overflow:hidden;text-overflow:ellipsis;max-width:100px;display:inline-block">${personDisplay(b.person)}</span><span style="color:#94a3b8;font-size:9px;flex-shrink:0">▾</span></div><div class="person-dropdown hidden" style="position:absolute;top:100%;left:0;z-index:1000;background:#fff;border:1px solid #d1d5db;border-radius:6px;padding:6px;min-width:140px;box-shadow:0 4px 12px rgba(0,0,0,.15);max-height:200px;overflow-y:auto">${buildPersonCheckboxes(p.id,b.bid,b.person)}</div></div></div>
+          <div class="bc-info"><span class="bc-tag ${bTag}">${bTagLabel}</span><input value="${b.name}" onchange="updBName(${p.id},${b.bid},this.value)" placeholder="批次名称"><div class="multi-person-wrap" style="position:relative;display:inline-block;margin-left:6px"><div class="multi-person-trigger" onclick="togglePersonDD(this)" style="cursor:pointer;padding:2px 6px;font-size:11px;border:1px solid #d1d5db;border-radius:4px;background:#fff;min-width:90px;display:flex;align-items:center;gap:4px;white-space:nowrap"><span class="mp-label" style="color:#64748b;overflow:hidden;text-overflow:ellipsis;max-width:100px;display:inline-block">${personDisplay(b.person)}</span><span style="color:#94a3b8;font-size:9px;flex-shrink:0">▾</span></div><div class="person-dropdown hidden" style="position:absolute;top:100%;left:0;z-index:1000;background:#fff;border:1px solid #d1d5db;border-radius:6px;padding:6px;min-width:140px;box-shadow:0 4px 12px rgba(0,0,0,.15);max-height:200px;overflow-y:auto">${buildPersonCheckboxes(p.id,b.bid,b.person)}</div></div></div>
           <button class="bc-shelve" onclick="toggleShelve(${p.id},${b.bid},this)" title="${b.shelved?'取消搁置':'搁置此批次'}">${b.shelved?'⏸ 已搁置':'⏸ 搁置'}</button>
           <span class="bc-del" onclick="delBatch(${p.id},${b.bid},this)" title="删除批次">🗑</span>
         </div>
