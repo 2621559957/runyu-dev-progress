@@ -257,8 +257,28 @@ let nextId = 1;
 let editTarget = null; // {personId, productId}
 
 function loadData(){
-  try{const d=localStorage.getItem(STORAGE_KEY);if(d){const p=JSON.parse(d);if(p.length>0)return p}}catch(e){}
+  try{const d=localStorage.getItem(STORAGE_KEY);if(d){const p=JSON.parse(d);if(p.length>0)return migrateData(p)}}catch(e){}
   return JSON.parse(JSON.stringify(DEMO_DATA));
+}
+function migrateData(data){
+  let changed=false;
+  data.forEach(p=>{
+    if(typeof p.person==='string'&&p.person){
+      // 旧格式：产品级 person 字符串 → 迁移到所有批次的 person 数组
+      const mainName=personById(p.person);
+      const pname=mainName?mainName.name:p.person;
+      (p.batches||[]).forEach(b=>{
+        if(!b.person||(Array.isArray(b.person)&&b.person.length===0)){
+          b.person=[pname];
+          changed=true;
+        }
+      });
+      delete p.person;
+      changed=true;
+    }
+  });
+  if(changed) try{localStorage.setItem(STORAGE_KEY,JSON.stringify(data))}catch(e){}
+  return data;
 }
 
 function saveData(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(products))}catch(e){}}
@@ -317,36 +337,53 @@ function render(){
 
 function renderOverview(){
   const el=document.getElementById('overview');
-  el.innerHTML=PERSONS.map(p=>{
-    const stats=personStats(p.id);
-    const pct=personOverall(p.id);
-    return '<div class="ov-card" onclick="scrollToPerson(\''+p.id+'\')">'
-      +'<div class="ov-name">'+p.name+'</div>'
-      +'<div class="ov-stats">'
-        +'<span><b>'+stats.products+'</b>产品</span>'
-        +'<span><b>'+stats.activeBatches+'</b>进行中</span>'
-        +'<span><b>'+stats.doneBatches+'</b>已完成</span>'
-      +'</div>'
-      +'<div class="ov-bar-wrap"><div class="ov-bar" style="width:'+pct+'%"></div></div>'
-      +'<div class="ov-pct">总体进度 '+pct+'%</div>'
-    +'</div>';
-  }).join('');
+  const fragments=[];
+  PERSONS.forEach(p=>{
+    try{
+      const stats=personStats(p.id);
+      const pct=personOverall(p.id);
+      fragments.push('<div class="ov-card" onclick="scrollToPerson(\''+p.id+'\')">'
+        +'<div class="ov-name">'+p.name+'</div>'
+        +'<div class="ov-stats">'
+          +'<span><b>'+stats.products+'</b>产品</span>'
+          +'<span><b>'+stats.activeBatches+'</b>进行中</span>'
+          +'<span><b>'+stats.doneBatches+'</b>已完成</span>'
+        +'</div>'
+        +'<div class="ov-bar-wrap"><div class="ov-bar" style="width:'+pct+'%"></div></div>'
+        +'<div class="ov-pct">总体进度 '+pct+'%</div>'
+      +'</div>');
+    }catch(e){
+      console.error('渲染'+p.name+'概览卡片失败:',e);
+      fragments.push('<div class="ov-card"><div class="ov-name">'+p.name+'</div><div class="ov-pct">加载失败</div></div>');
+    }
+  });
+  el.innerHTML=fragments.join('');
 }
 
 function renderDetail(){
   const el=document.getElementById('detail');
-  el.innerHTML=PERSONS.map(p=>{
-    const prods=products.filter(x=>x.batches&&x.batches.some(b=>mainPersonOf(b)===p.name));
-    return '<div class="col-card" id="col-'+p.id+'">'
-      +'<div class="col-header">'+p.name+'<span class="badge">'+prods.length+'个产品</span></div>'
-      +'<div class="col-body">'
-        +(prods.length===0
-          ?'<div class="empty-hint">暂无产品</div>'
-          :prods.map(prod=>renderProdCard(prod,p)).join(''))
-        +'<button class="add-prod-btn" onclick="showAddPanel(\''+p.id+'\')">＋ 添加产品</button>'
-      +'</div>'
-    +'</div>';
-  }).join('');
+  const fragments=[];
+  PERSONS.forEach(p=>{
+    try{
+      const prods=products.filter(x=>x.batches&&x.batches.some(b=>mainPersonOf(b)===p.name));
+      fragments.push('<div class="col-card" id="col-'+p.id+'">'
+        +'<div class="col-header">'+p.name+'<span class="badge">'+prods.length+'个产品</span></div>'
+        +'<div class="col-body">'
+          +(prods.length===0
+            ?'<div class="empty-hint">暂无产品</div>'
+            :prods.map(prod=>renderProdCard(prod,p)).join(''))
+          +'<button class="add-prod-btn" onclick="showAddPanel(\''+p.id+'\')">＋ 添加产品</button>'
+        +'</div>'
+      +'</div>');
+    }catch(e){
+      console.error('渲染'+p.name+'卡片失败:',e);
+      fragments.push('<div class="col-card" id="col-'+p.id+'">'
+        +'<div class="col-header">'+p.name+'<span class="badge">错误</span></div>'
+        +'<div class="col-body"><div class="empty-hint">⚠ 渲染出错，请刷新页面</div></div>'
+      +'</div>');
+    }
+  });
+  el.innerHTML=fragments.join('');
 }
 
 function renderProdCard(prod,p){
