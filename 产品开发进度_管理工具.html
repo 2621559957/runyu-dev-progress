@@ -551,6 +551,11 @@ function migrateData(arr){
     }
     // 清除产品级负责人（负责人只在批次级别设置）
     delete p.person;
+    // 迁移批次负责人：字符串 → 数组
+    if(p.batches) p.batches.forEach(b=>{
+      if(typeof b.person === 'string') b.person = b.person ? [b.person] : [];
+      else if(!Array.isArray(b.person)) b.person = [];
+    });
   });
   try{saveData(arr)}catch(e){}
 }
@@ -578,7 +583,7 @@ function getMembers(){
   if(EMBEDDED_MEMBERS && EMBEDDED_MEMBERS.length>0)return [...EMBEDDED_MEMBERS];
   // 最后从已有数据中提取
   const persons=new Set();
-  products.forEach(p=>{if(p.person)persons.add(p.person);p.batches.forEach(b=>{if(b.person)persons.add(b.person)})});
+  products.forEach(p=>{p.batches&&p.batches.forEach(b=>{const bp=b.person;if(Array.isArray(bp))bp.forEach(x=>persons.add(x));else if(bp)persons.add(bp)})});
   const m=[...persons].filter(Boolean).sort();
   if(m.length>0)saveMembers(m);
   return m;
@@ -593,7 +598,7 @@ function showTeamPanel(){
   if(!el){toast("内部错误：找不到teamList",true);return}
   if(members.length===0)el.innerHTML='<div class="tm-empty">暂无组员，请在下方添加</div>';
   else el.innerHTML=members.map(m=>{
-    const count=products.filter(p=>(p.person===m||(p.batches||[]).some(b=>b.person===m))).length;
+    const count=products.filter(p=>(p.batches||[]).some(b=>{const bp=b.person;if(Array.isArray(bp))return bp.includes(m);return bp===m})).length;
     return `<div class="tm-item"><span class="tm-name">${m}</span><span class="tm-count">${count}个产品</span><button class="tm-del" data-member="${m}" title="删除">✕</button></div>`;
   }).join('');
   const panel=document.getElementById('teamPanel');
@@ -619,8 +624,30 @@ function delMember(name){
   saveMembers(members);showTeamPanel();toast('已删除：'+name);
 }
 function buildMemberOptions(selected){
-  return '<option value="">未指定</option>'+getMembers().map(m=>'<option value="'+m+'"'+(selected===m?' selected':'')+'>'+m+'</option>').join('');
+  return '<option value="">未指定</option>'+getMembers().map(m=>'<option value="'+m+'"'+((Array.isArray(selected)?selected.includes(m):selected===m)?' selected':'')+'>'+m+'</option>').join('');
 }
+function personDisplay(persons){
+  if(!persons||!Array.isArray(persons)||persons.length===0)return'未指定';
+  return persons[0]+(persons.length>1?' +'+(persons.length-1):'');
+}
+function buildPersonCheckboxes(pid,bid,selected){
+  return getMembers().map(m=>{
+    const isChecked=Array.isArray(selected)&&selected.includes(m);
+    return'<label class="mp-item" style="display:flex;align-items:center;gap:6px;padding:3px 4px;cursor:pointer;font-size:11px;border-radius:4px" onmouseover="this.style.background=\'#f1f5f9\'" onmouseout="this.style.background=\'\'"><input type="checkbox" value="'+m+'" '+(isChecked?'checked':'')+' onchange="updBPersons('+pid+','+bid+')" class="person-chk-'+pid+'-'+bid+'"><span>'+m+'</span></label>';
+  }).join('');
+}
+function updBPersons(pid,bid){
+  const b=products.find(x=>x.id===Number(pid)).batches.find(b=>String(b.bid)===String(bid));
+  if(!b)return;
+  const checks=document.querySelectorAll('.person-chk-'+pid+'-'+bid+':checked');
+  b.person=Array.from(checks).map(c=>c.value);
+}
+// 点击空白处关闭人员下拉
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.multi-person-wrap')){
+    document.querySelectorAll('.person-dropdown').forEach(d=>d.classList.add('hidden'));
+  }
+});
 
 function updateAuthUI(){
   const logged=isLoggedIn();
@@ -750,7 +777,7 @@ function buildList(){
         const subcatClass=scid?' subcat-prod':'';
         const rid=(scid||cid)+"r"+pi;
         html+=`<div class="prod-row cat-${p.cat}${subcatClass} ${isExpanded?'':'collapsed'}" data-cid="${cid}"${scidAttr} data-pid="${p.id}" id="${rid}"><div class="name-col" ${clickAction} style="cursor:pointer">${hasBatches?'<span class="p-arrow">▸</span>':''}<span class="p-name">${p.name}</span>${batchTag}${noBatchHint}</div></div>`;
-        if(hasBatches){const batchSubcatClass=scid?' subcat-batch':'';p.batches.forEach(b=>{const bShelved=b.shelved||false;const bAllDone=allDone(b.stages);const bCurr=hasCurr(b.stages);let bNote='';const bCurrStg=b.stages.find(s=>s.status==="curr");if(bShelved)bNote='<span class="n-badge" style="background:#e4e4e7">⏸</span>已搁置';else if(bCurrStg){bNote='<span class="n-badge curr">◐</span>'+bCurrStg.s+' <span class="n-date">'+fmtShort(bCurrStg.et)+'截止</span>';if(bCurrStg.note)bNote+='<br><span class="n-stage-note" style="font-size:9px">📝 '+bCurrStg.note+'</span>'}else if(bAllDone)bNote='<span class="n-badge done">✓</span>全部完成';const delBtn='';html+=`<div class="batch-row${batchSubcatClass}${bShelved?' shelved':''} ${isExpanded?'':'hidden'}" data-cid="${cid}"${scidAttr} data-pid="${p.id}"><div class="name-col"><span class="b-tag">${getProdCode(p.name)}-${b.bid}</span><span class="b-name">${b.name}</span>${b.images&&b.images.length?`<div class="batch-img-tooltip">${b.images.map(img=>`<img src="${img.replace(/"/g,'&quot;')}" onclick="event.stopPropagation();viewFullImg(this.src)">`).join('')}</div>`:''}</div><div class="note-col">${bNote}</div><div class="person-col">${b.person||p.person||''}</div>${renderProgressBar(b.stages,p.id,b.bid,logged)}<div class="pct-col">${stagePct(b.stages)}%</div><div class="detail-col" title="${(b.detail||'').replace(/"/g,'&quot;')}">${(b.images&&b.images.length?'📷 ': '')}${b.detail||''}</div></div>`})}
+        if(hasBatches){const batchSubcatClass=scid?' subcat-batch':'';p.batches.forEach(b=>{const bShelved=b.shelved||false;const bAllDone=allDone(b.stages);const bCurr=hasCurr(b.stages);let bNote='';const bCurrStg=b.stages.find(s=>s.status==="curr");if(bShelved)bNote='<span class="n-badge" style="background:#e4e4e7">⏸</span>已搁置';else if(bCurrStg){bNote='<span class="n-badge curr">◐</span>'+bCurrStg.s+' <span class="n-date">'+fmtShort(bCurrStg.et)+'截止</span>';if(bCurrStg.note)bNote+='<br><span class="n-stage-note" style="font-size:9px">📝 '+bCurrStg.note+'</span>'}else if(bAllDone)bNote='<span class="n-badge done">✓</span>全部完成';const delBtn='';html+=`<div class="batch-row${batchSubcatClass}${bShelved?' shelved':''} ${isExpanded?'':'hidden'}" data-cid="${cid}"${scidAttr} data-pid="${p.id}"><div class="name-col"><span class="b-tag">${getProdCode(p.name)}-${b.bid}</span><span class="b-name">${b.name}</span>${b.images&&b.images.length?`<div class="batch-img-tooltip">${b.images.map(img=>`<img src="${img.replace(/"/g,'&quot;')}" onclick="event.stopPropagation();viewFullImg(this.src)">`).join('')}</div>`:''}</div><div class="note-col">${bNote}</div><div class="person-col">${Array.isArray(b.person)?b.person[0]||'':typeof b.person==='string'?b.person:''}</div>${renderProgressBar(b.stages,p.id,b.bid,logged)}<div class="pct-col">${stagePct(b.stages)}%</div><div class="detail-col" title="${(b.detail||'').replace(/"/g,'&quot;')}">${(b.images&&b.images.length?'📷 ': '')}${b.detail||''}</div></div>`})}
       };
 
       Object.keys(subcatMap).forEach(sc=>{
@@ -773,7 +800,7 @@ function buildList(){
         if(hasBatches){const bTotal=p.batches.length;batchTag='<span class="p-batch-tag">'+bTotal+'批次</span>'}
         const noBatchHint=!hasBatches?'<span class="p-no-batch" '+(logged?'onclick="openEdit('+p.id+')"':'')+'>暂无批次 · 点击添加</span>':'';
         html+=`<div class="prod-row cat-${p.cat} ${isExpanded?'':'collapsed'}" data-cid="${cid}" data-pid="${p.id}" id="${cid}r${i}"><div class="name-col" ${clickAction} style="cursor:pointer">${hasBatches?'<span class="p-arrow">▸</span>':''}<span class="p-name">${p.name}</span>${batchTag}${noBatchHint}</div></div>`;
-        if(hasBatches){p.batches.forEach(b=>{const bShelved=b.shelved||false;const bAllDone=allDone(b.stages);const bCurr=hasCurr(b.stages);let bNote='';const bCurrStg=b.stages.find(s=>s.status==="curr");if(bShelved)bNote='<span class="n-badge" style="background:#e4e4e7">⏸</span>已搁置';else if(bCurrStg){bNote='<span class="n-badge curr">◐</span>'+bCurrStg.s+' <span class="n-date">'+fmtShort(bCurrStg.et)+'截止</span>';if(bCurrStg.note)bNote+='<br><span class="n-stage-note" style="font-size:9px">📝 '+bCurrStg.note+'</span>'}else if(bAllDone)bNote='<span class="n-badge done">✓</span>全部完成';const delBtn2='';html+=`<div class="batch-row${bShelved?' shelved':''} ${isExpanded?'':'hidden'}" data-cid="${cid}" data-pid="${p.id}"><div class="name-col"><span class="b-tag">${getProdCode(p.name)}-${b.bid}</span><span class="b-name">${b.name}</span>${b.images&&b.images.length?`<div class="batch-img-tooltip">${b.images.map(img=>`<img src="${img.replace(/"/g,'&quot;')}" onclick="event.stopPropagation();viewFullImg(this.src)">`).join('')}</div>`:''}</div><div class="note-col">${bNote}</div><div class="person-col">${b.person||p.person||''}</div>${renderProgressBar(b.stages,p.id,b.bid,logged)}<div class="pct-col">${stagePct(b.stages)}%</div><div class="detail-col" title="${(b.detail||'').replace(/"/g,'&quot;')}">${(b.images&&b.images.length?'📷 ': '')}${b.detail||''}</div></div>`})}
+        if(hasBatches){p.batches.forEach(b=>{const bShelved=b.shelved||false;const bAllDone=allDone(b.stages);const bCurr=hasCurr(b.stages);let bNote='';const bCurrStg=b.stages.find(s=>s.status==="curr");if(bShelved)bNote='<span class="n-badge" style="background:#e4e4e7">⏸</span>已搁置';else if(bCurrStg){bNote='<span class="n-badge curr">◐</span>'+bCurrStg.s+' <span class="n-date">'+fmtShort(bCurrStg.et)+'截止</span>';if(bCurrStg.note)bNote+='<br><span class="n-stage-note" style="font-size:9px">📝 '+bCurrStg.note+'</span>'}else if(bAllDone)bNote='<span class="n-badge done">✓</span>全部完成';const delBtn2='';html+=`<div class="batch-row${bShelved?' shelved':''} ${isExpanded?'':'hidden'}" data-cid="${cid}" data-pid="${p.id}"><div class="name-col"><span class="b-tag">${getProdCode(p.name)}-${b.bid}</span><span class="b-name">${b.name}</span>${b.images&&b.images.length?`<div class="batch-img-tooltip">${b.images.map(img=>`<img src="${img.replace(/"/g,'&quot;')}" onclick="event.stopPropagation();viewFullImg(this.src)">`).join('')}</div>`:''}</div><div class="note-col">${bNote}</div><div class="person-col">${Array.isArray(b.person)?b.person[0]||'':typeof b.person==='string'?b.person:''}</div>${renderProgressBar(b.stages,p.id,b.bid,logged)}<div class="pct-col">${stagePct(b.stages)}%</div><div class="detail-col" title="${(b.detail||'').replace(/"/g,'&quot;')}">${(b.images&&b.images.length?'📷 ': '')}${b.detail||''}</div></div>`})}
       });
     }
     ci++;
@@ -847,7 +874,6 @@ function showTip(e,pid,bid){
       '</div>';
     if(sg.note) tipHtml += '<div style="color:#818cf8;font-size:9px;margin-left:50px;margin-top:1px">📝 '+sg.note+'</div>';
   });
-  if(p.person) tipHtml += '<div style="color:#94a3b8;font-size:10px;margin-top:4px">👤 '+p.person+'</div>';
   if(p.riskNote) tipHtml += '<div style="color:#f59e0b;font-size:10px;margin-top:2px">⚠ '+p.riskNote+'</div>';
   
   tipEl.innerHTML=tipHtml;
@@ -888,7 +914,7 @@ function openEdit(pid){
       const bTagLabel=bAllDone?'已全部完成':bCurr?'进行中':'未开始';
       batchHTML+=`<div class="batch-card${b.shelved?' shelved':''}">
         <div class="bc-head">
-          <div class="bc-info"><span class="bc-tag ${bTag}">${bTagLabel}</span><input value="${b.name}" onchange="updBName(${p.id},${b.bid},this.value)" placeholder="批次名称"><select onchange="updBPerson(${p.id},${b.bid},this.value)" style="width:84px;margin-left:6px;padding:2px 4px;font-size:11px;border:1px solid #d1d5db;border-radius:4px;background:#fff">${buildMemberOptions(b.person||'')}</select></div>
+          <div class="bc-info"><span class="bc-tag ${bTag}">${bTagLabel}</span><input value="${b.name}" onchange="updBName(${p.id},${b.bid},this.value)" placeholder="批次名称"><div class="multi-person-wrap" style="position:relative;display:inline-block;margin-left:6px"><div class="multi-person-trigger" onclick="event.stopPropagation();this.nextElementSibling.classList.toggle('hidden')" style="cursor:pointer;padding:2px 6px;font-size:11px;border:1px solid #d1d5db;border-radius:4px;background:#fff;min-width:90px;display:flex;align-items:center;gap:4px;white-space:nowrap"><span class="mp-label" style="color:#64748b;overflow:hidden;text-overflow:ellipsis;max-width:100px;display:inline-block">${personDisplay(b.person)}</span><span style="color:#94a3b8;font-size:9px;flex-shrink:0">▾</span></div><div class="person-dropdown hidden" style="position:absolute;top:100%;left:0;z-index:1000;background:#fff;border:1px solid #d1d5db;border-radius:6px;padding:6px;min-width:140px;box-shadow:0 4px 12px rgba(0,0,0,.15);max-height:200px;overflow-y:auto">${buildPersonCheckboxes(p.id,b.bid,b.person)}</div></div></div>
           <button class="bc-shelve" onclick="toggleShelve(${p.id},${b.bid},this)" title="${b.shelved?'取消搁置':'搁置此批次'}">${b.shelved?'⏸ 已搁置':'⏸ 搁置'}</button>
           <span class="bc-del" onclick="delBatch(${p.id},${b.bid},this)" title="删除批次">🗑</span>
         </div>
@@ -974,7 +1000,7 @@ function addBatchToProduct(pid){
   const maxBid=p.batches.reduce((m,b)=>Math.max(m,b.bid||0),0);
   const defaultStages=stageDefs.map(s=>({s,st:todayStr,et:todayStr,status:"pend",note:""}));
   defaultStages[0].status="curr";
-  p.batches.push({bid:maxBid+1,name:"第"+(maxBid+1)+"批",stages:defaultStages,detail:"",images:[],person:""});
+  p.batches.push({bid:maxBid+1,name:"第"+(maxBid+1)+"批",stages:defaultStages,detail:"",images:[],person:[]});
   saveData(products);closeEdit();openEdit(pid);toast("✓ 已添加批次 #"+(maxBid+1));
 }
 function delBatch(pid,bid,el){
@@ -1175,17 +1201,19 @@ function buildTeamProgress(){
   if(!wrap) return;
   const currentFilterCat = currentFilter;
   
-  // 收集所有批次，按组员分组
-  const personMap = {}; // {personName: [{prod, batch}]}
+  // 收集所有批次，按组员分组（以主负责人分组）
+  const personMap = {}; // {personName: [{prod, batch, coPersons}]}
   if(!Array.isArray(products)){ wrap.innerHTML='<div class="tp-empty">📭 暂无数据</div>'; return; }
   products.forEach(p => {
     if(currentFilterCat !== 'all' && p.cat !== currentFilterCat) return;
     const batches = p.batches || [];
     batches.forEach(b => {
-      const person = (b.person || p.person || '').trim();
-      if(!person) return;
-      if(!personMap[person]) personMap[person] = [];
-      personMap[person].push({prod: p, batch: b});
+      const bp = b.person;
+      const mainPerson = Array.isArray(bp) ? (bp[0] || '').trim() : (bp || '').trim();
+      if(!mainPerson) return;
+      const coPersons = Array.isArray(bp) && bp.length > 1 ? bp.slice(1) : [];
+      if(!personMap[mainPerson]) personMap[mainPerson] = [];
+      personMap[mainPerson].push({prod: p, batch: b, coPersons: coPersons});
     });
   });
 
@@ -1261,7 +1289,7 @@ function buildTeamProgress(){
       html += `<div class="tp-batch-row${bShelved?' shelved':''}" onclick="navigateToBatch(${p.id},${b.bid},'${p.cat}')" style="cursor:pointer" title="点击跳转到列表页对应批次">
         <div class="tp-b-prod" title="${p.name}">${p.name}</div>
         <div class="tp-b-cat">${p.cat}</div>
-        <div class="tp-b-name" title="${b.name}">${getProdCode(p.name)}-${b.bid} ${b.name}</div>
+        <div class="tp-b-name" title="${b.name}">${getProdCode(p.name)}-${b.bid} ${b.name}${item.coPersons&&item.coPersons.length>0?' <span style="color:#818cf8;font-size:10px">['+item.coPersons.join(', ')+']</span>':''}</div>
         <div class="tp-b-bar">${barHTML}</div>
         <div class="tp-b-pct">${bPct}%</div>
         <div class="tp-b-stage">${currStage}</div>

@@ -174,78 +174,78 @@ const PERSONS = [
 const STORAGE_KEY = 'team_progress_data';
 
 const DEMO_DATA = [
-  {id:1,person:'fan',name:'磁吸相框',batches:[
-    {bid:1,name:'第1批',stages:STAGES.map((s,i)=>{
+  {id:1,name:'磁吸相框',batches:[
+    {bid:1,name:'第1批',person:['范孝兵'],stages:STAGES.map((s,i)=>{
       const d=new Date('2026-05-'+(10+i*8));const e=new Date('2026-05-'+(18+i*8));
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:i<4?'done':i===4?'curr':'pend'}
     })},
-    {bid:2,name:'第2批（新款）',stages:STAGES.map((s,i)=>{
+    {bid:2,name:'第2批（新款）',person:['范孝兵','汪天宝'],stages:STAGES.map((s,i)=>{
       const d=new Date('2026-06-'+(5+i*7));const e=new Date('2026-06-'+(14+i*7));
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:i<2?'done':i===2?'curr':'pend'}
     })}
   ]},
-  {id:2,person:'fan',name:'亚克力展示盒',batches:[
-    {bid:1,name:'第1批',stages:STAGES.map((s,i)=>{
+  {id:2,name:'亚克力展示盒',batches:[
+    {bid:1,name:'第1批',person:['范孝兵','李知春'],stages:STAGES.map((s,i)=>{
       const d=new Date('2026-05-'+(15+i*6));const e=new Date('2026-05-'+(23+i*6));
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:i<3?'done':i===3?'curr':'pend'}
     })}
   ]},
-  {id:3,person:'wang',name:'玻璃花瓶',batches:[
-    {bid:1,name:'第1批',stages:STAGES.map((s,i)=>{
+  {id:3,name:'玻璃花瓶',batches:[
+    {bid:1,name:'第1批',person:['汪天宝'],stages:STAGES.map((s,i)=>{
       const d=new Date('2026-05-'+(8+i*9));const e=new Date('2026-05-'+(18+i*9));
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:i<1?'done':i===1?'curr':'pend'}
     })}
   ]},
-  {id:4,person:'wang',name:'陶瓷摆件',batches:[
-    {bid:1,name:'第1批',stages:STAGES.map((s,i)=>{
+  {id:4,name:'陶瓷摆件',batches:[
+    {bid:1,name:'第1批',person:['汪天宝','吴玉萱'],stages:STAGES.map((s,i)=>{
       const d=new Date('2026-06-'+(1+i*8));const e=new Date('2026-06-'+(10+i*8));
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:i===0?'done':i===1?'curr':'pend'}
     })},
-    {bid:2,name:'第2批（定制款）',stages:STAGES.map((s,i)=>{
+    {bid:2,name:'第2批（定制款）',person:['汪天宝'],stages:STAGES.map((s,i)=>{
       const d=new Date('2026-06-'+(15+i*7));const e=new Date('2026-06-'+(24+i*7));
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:i===0?'curr':'pend'}
     })}
   ]},
-  {id:5,person:'wang',name:'树脂托盘',batches:[
-    {bid:1,name:'第1批',stages:STAGES.map((s,i)=>{
+  {id:5,name:'树脂托盘',batches:[
+    {bid:1,name:'第1批',person:['汪天宝'],stages:STAGES.map((s,i)=>{
       const d=new Date('2026-06-'+(10+i*7));const e=new Date('2026-06-'+(20+i*7));
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:'pend'}
     })}
   ]},
-  {id:6,person:'li',name:'收纳柜',batches:[
-    {bid:1,name:'第1批',stages:STAGES.map((s,i)=>{
+  {id:6,name:'收纳柜',batches:[
+    {bid:1,name:'第1批',person:['李知春'],stages:STAGES.map((s,i)=>{
       const d=new Date('2026-04-'+(20+i*10));const e=new Date('2026-05-'+(2+i*10));
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:i<5?'done':i===5?'curr':'pend'}
     })}
   ]},
-  {id:7,person:'li',name:'多层置物架',batches:[
-    {bid:1,name:'第1批',stages:STAGES.map((s,i)=>{
+  {id:7,name:'多层置物架',batches:[
+    {bid:1,name:'第1批',person:['李知春','范孝兵'],stages:STAGES.map((s,i)=>{
       const d=new Date('2026-05-'+(20+i*7));const e=new Date('2026-05-'+(30+i*7));
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:i<2?'done':i===2?'curr':'pend'}
     })},
-    {bid:2,name:'第2批（大尺寸）',stages:STAGES.map((s,i)=>{
+    {bid:2,name:'第2批（大尺寸）',person:['李知春'],stages:STAGES.map((s,i)=>{
       const d=new Date('2026-06-'+(10+i*8));const e=new Date('2026-06-'+(20+i*8));
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:'pend'}
     })}
   ]},
-  {id:8,person:'wu',name:'墙贴挂饰',batches:[
-    {bid:1,name:'第1批',stages:STAGES.map((s,i)=>{
+  {id:8,name:'墙贴挂饰',batches:[
+    {bid:1,name:'第1批',person:['吴玉萱'],stages:STAGES.map((s,i)=>{
       const d=new Date('2026-05-'+(5+i*8));const e=new Date('2026-05-'+(15+i*8));
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:i<4?'done':i===4?'curr':'pend'}
     })}
   ]},
-  {id:9,person:'wu',name:'桌面收纳',batches:[
-    {bid:1,name:'第1批',stages:STAGES.map((s,i)=>{
+  {id:9,name:'桌面收纳',batches:[
+    {bid:1,name:'第1批',person:['吴玉萱','汪天宝'],stages:STAGES.map((s,i)=>{
       const d=new Date('2026-05-'+(25+i*7));const e=new Date('2026-06-'+(5+i*7));
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:i<2?'done':i===2?'curr':'pend'}
     })},
-    {bid:2,name:'第2批',stages:STAGES.map((s,i)=>{
+    {bid:2,name:'第2批',person:['吴玉萱'],stages:STAGES.map((s,i)=>{
       const d=new Date('2026-06-'+(20+i*8));const e=new Date('2026-06-'+(30+i*8));
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:'pend'}
     })}
   ]},
-  {id:10,person:'wu',name:'挂钩收纳',batches:[
-    {bid:1,name:'第1批',stages:STAGES.map((s,i)=>{
+  {id:10,name:'挂钩收纳',batches:[
+    {bid:1,name:'第1批',person:['吴玉萱','李知春'],stages:STAGES.map((s,i)=>{
       const d=new Date('2026-06-'+(1+i*6));const e=new Date('2026-06-'+(10+i*6));
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:i===0?'done':i===1?'curr':'pend'}
     })}
@@ -272,20 +272,35 @@ init();
 
 /* ========== 工具函数 ========== */
 function personById(pid){return PERSONS.find(p=>p.id===pid)}
+function personByName(name){return PERSONS.find(p=>p.name===name)}
+function mainPersonOf(batch){
+  const bp=batch.person;
+  if(Array.isArray(bp))return bp[0]||'';
+  return typeof bp==='string'?bp:'';
+}
+function coPersonsOf(batch){
+  const bp=batch.person;
+  if(Array.isArray(bp)&&bp.length>1)return bp.slice(1);
+  return [];
+}
 function batchProgress(b){if(!b.stages||b.stages.length===0)return 0;const done=b.stages.filter(s=>s.status==='done').length;return Math.round(done/b.stages.length*100)}
 function batchCurrStage(b){return b.stages?b.stages.find(s=>s.status==='curr'):null}
 function personOverall(personId){
-  const prods=products.filter(p=>p.person===personId);
+  const pn=personById(personId);
+  if(!pn)return 0;
+  const prods=products.filter(p=>p.batches&&p.batches.some(b=>mainPersonOf(b)===pn.name));
   if(prods.length===0)return 0;
   let totalStages=0,doneStages=0;
-  prods.forEach(p=>{p.batches.forEach(b=>{b.stages.forEach(s=>{totalStages++;if(s.status==='done')doneStages++})})});
+  prods.forEach(p=>{p.batches.forEach(b=>{if(mainPersonOf(b)===pn.name)b.stages.forEach(s=>{totalStages++;if(s.status==='done')doneStages++})})});
   return totalStages>0?Math.round(doneStages/totalStages*100):0;
 }
 function personStats(personId){
-  const prods=products.filter(p=>p.person===personId);
-  let doneBatches=0,activeBatches=0,pendBatches=0;
-  prods.forEach(p=>{p.batches.forEach(b=>{const pct=batchProgress(b);if(pct===100)doneBatches++;else if(pct>0)activeBatches++;else pendBatches++})});
-  return {products:prods.length,batches:doneBatches+activeBatches+pendBatches,doneBatches,activeBatches,pendBatches};
+  const pn=personById(personId);
+  if(!pn)return {products:0,batches:0,doneBatches:0,activeBatches:0,pendBatches:0};
+  const prods=products.filter(p=>p.batches&&p.batches.some(b=>mainPersonOf(b)===pn.name));
+  let doneBatches=0,activeBatches=0,pendBatches=0,totalBatches=0;
+  prods.forEach(p=>{p.batches.forEach(b=>{if(mainPersonOf(b)===pn.name){totalBatches++;const pct=batchProgress(b);if(pct===100)doneBatches++;else if(pct>0)activeBatches++;else pendBatches++}})});
+  return {products:prods.length,batches:totalBatches,doneBatches,activeBatches,pendBatches};
 }
 function stageClass(s){
   const today=new Date().toISOString().slice(0,10);
@@ -321,7 +336,7 @@ function renderOverview(){
 function renderDetail(){
   const el=document.getElementById('detail');
   el.innerHTML=PERSONS.map(p=>{
-    const prods=products.filter(x=>x.person===p.id);
+    const prods=products.filter(x=>x.batches&&x.batches.some(b=>mainPersonOf(b)===p.name));
     return '<div class="col-card" id="col-'+p.id+'">'
       +'<div class="col-header">'+p.name+'<span class="badge">'+prods.length+'个产品</span></div>'
       +'<div class="col-body">'
@@ -357,8 +372,9 @@ function renderProdCard(prod,p){
       +batches.map(b=>{
         const bp=batchProgress(b);
         const cls=bp===100?'done-c':bp>0?'curr-c':'pend-c';
+        const co=coPersonsOf(b);
         return '<div class="batch-row" onclick="advanceBatchStage('+prod.id+','+b.bid+')">'
-          +'<span class="b-name">'+b.name+'</span>'
+          +'<span class="b-name">'+b.name+(co.length>0?' <span style="color:#818cf8;font-size:10px">['+co.join(', ')+']</span>':'')+'</span>'
           +'<span class="b-pct '+cls+'">'+bp+'%</span>'
         +'</div>';
       }).join('')
@@ -441,6 +457,8 @@ function showAddPanel(personId){
     +'<h3>添加产品 — '+p.name+'</h3>'
     +'<label>产品名称</label><input id="pnInput" placeholder="输入产品名称">'
     +'<label>批次数</label><select id="pnBatches"><option value="1">1个批次</option><option value="2">2个批次</option><option value="3">3个批次</option></select>'
+    +'<label>协同负责人（可多选）</label>'
+    +'<div class="stage-checks" style="margin-bottom:6px">'+PERSONS.map(m=>'<span class="stage-chk'+(m.id===personId?' on':'')+'" data-pid="'+m.id+'" onclick="this.classList.toggle(\'on\')">'+m.name+'</span>').join('')+'</div>'
     +'<div class="btn-row">'
       +'<button class="btn btn-cancel" onclick="closePanel()">取消</button>'
       +'<button class="btn btn-primary" onclick="doAddProduct()">确认添加</button>'
@@ -453,6 +471,15 @@ function doAddProduct(){
   const name=document.getElementById('pnInput').value.trim();
   if(!name){toast('请输入产品名称');return}
   const batchCount=parseInt(document.getElementById('pnBatches').value);
+  // 收集选中的负责人
+  const selectedIds=[];let mainFirst=true;
+  document.querySelectorAll('.stage-chk.on').forEach(chk=>{
+    const pid=chk.dataset.pid;
+    if(pid===editTarget.personId)selectedIds.unshift(pid);
+    else selectedIds.push(pid);
+  });
+  if(selectedIds.length===0)selectedIds.push(editTarget.personId);
+  const personNames=selectedIds.map(pid=>{const x=personById(pid);return x?x.name:pid});
   const today=new Date().toISOString().slice(0,10);
   const batches=[];
   for(let j=1;j<=batchCount;j++){
@@ -461,9 +488,9 @@ function doAddProduct(){
       const e=new Date();e.setDate(e.getDate()+i*7+8);
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:i===0?'curr':'pend'};
     });
-    batches.push({bid:Math.max(...products.flatMap(p=>p.batches.map(b=>b.bid)),0)+j,name:'第'+j+'批',stages});
+    batches.push({bid:Math.max(...products.flatMap(p=>p.batches.map(b=>b.bid)),0)+j,name:'第'+j+'批',stages,person:personNames.slice()});
   }
-  products.push({id:nextId++,person:editTarget.personId,name,batches});
+  products.push({id:nextId++,name,batches});
   saveData();closePanel();render();
   toast('✓ 已添加：'+name);
 }
