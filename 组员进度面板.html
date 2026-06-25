@@ -284,7 +284,10 @@ function migrateData(data){
 function saveData(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(products))}catch(e){}}
 
 function init(){
+  console.log('=== 组员进度面板 v2026-06-25-1300 ===');
   products = loadData();
+  console.log('加载了',products.length,'个产品:',products.map(p=>p.name+'['+p.id+'] batches:'+(p.batches||[]).length).join(', '));
+  console.log('批次主负责人分布:',products.map(p=>p.name+':'+(p.batches||[]).map(b=>mainPersonOf(b)).join('/')).join(' | '));
   nextId = Math.max(...products.map(p=>p.id),0)+1;
   render();
 }
@@ -361,13 +364,15 @@ function renderOverview(){
 }
 
 function renderDetail(){
+  console.log('=== renderDetail === PERSONS:',PERSONS.length,'products:',products.length);
+  PERSONS.forEach(p=>console.log('  '+p.id, p.name, '→ prods:',products.filter(x=>x.batches&&x.batches.some(b=>mainPersonOf(b)===p.name)).length));
   const el=document.getElementById('detail');
   const fragments=[];
   PERSONS.forEach(p=>{
     try{
       const prods=products.filter(x=>x.batches&&x.batches.some(b=>mainPersonOf(b)===p.name));
-      fragments.push('<div class="col-card" id="col-'+p.id+'">'
-        +'<div class="col-header">'+p.name+'<span class="badge">'+prods.length+'个产品</span></div>'
+      fragments.push('<div class="col-card" id="col-'+p.id+'" style="display:block!important;visibility:visible!important;opacity:1!important">'
+        +'<div class="col-header">'+p.name+'<span class="badge" style="display:inline!important">'+prods.length+'个产品</span></div>'
         +'<div class="col-body">'
           +(prods.length===0
             ?'<div class="empty-hint">暂无产品</div>'
@@ -383,7 +388,27 @@ function renderDetail(){
       +'</div>');
     }
   });
-  el.innerHTML=fragments.join('');
+  console.log('Generated fragments:',fragments.length);
+  el.innerHTML = fragments.join('');
+  console.log('After innerHTML, detail has',el.querySelectorAll('.col-card').length,'col-card elements');
+  // 强制检查：如果 DOM 里少于 4 张卡片，补充缺失的
+  const domCards = el.querySelectorAll('.col-card');
+  if(domCards.length < PERSONS.length){
+    console.warn('⚠ DOM卡片数('+domCards.length+') < PERSONS('+PERSONS.length+')，正在补充...');
+    const existingIds = new Set();
+    domCards.forEach(c=>{ const m=c.id.match(/col-(.+)/); if(m) existingIds.add(m[1]); });
+    PERSONS.forEach(p=>{
+      if(!existingIds.has(p.id)){
+        console.log('补充缺失卡片:',p.name);
+        const div=document.createElement('div');
+        div.className='col-card';div.id='col-'+p.id;
+        div.innerHTML='<div class="col-header">'+p.name+'<span class="badge">0个产品</span></div>'
+          +'<div class="col-body"><div class="empty-hint">暂无产品</div>'
+          +'<button class="add-prod-btn" onclick="showAddPanel(\''+p.id+'\')">＋ 添加产品</button></div>';
+        el.appendChild(div);
+      }
+    });
+  }
 }
 
 function renderProdCard(prod,p){
