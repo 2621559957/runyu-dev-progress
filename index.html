@@ -633,11 +633,31 @@ function personDisplay(persons){
 function buildPersonCheckboxes(pid,bid,selected){
   return getMembers().map((m,i)=>{
     const isChecked=Array.isArray(selected)&&selected.includes(m);
-    const isFirst=Array.isArray(selected)&&selected.length>0&&selected[0]===m;
-    const isCo=isChecked&&!isFirst;
-    const tag=isFirst?'<span style="font-size:9px;color:#fff;background:#3b82f6;border-radius:3px;padding:0 4px;margin-left:4px">主</span>':isCo?'<span style="font-size:9px;color:#fff;background:#8b5cf6;border-radius:3px;padding:0 4px;margin-left:4px">协</span>':'';
-    return'<label class="mp-item" style="display:flex;align-items:center;gap:6px;padding:3px 4px;cursor:pointer;font-size:11px;border-radius:4px" onmouseover="this.style.background=\'#f1f5f9\'" onmouseout="this.style.background=\'\'"><input type="checkbox" value="'+m+'" '+(isChecked?'checked':'')+' onchange="updBPersons('+pid+','+bid+',this)" class="person-chk-'+pid+'-'+bid+'">'+m+tag+'</label>';
+    // 只返回checkbox，不加标签，标签由initPersonTags统一添加
+    return'<label class="mp-item" style="display:flex;align-items:center;gap:6px;padding:3px 4px;cursor:pointer;font-size:11px;border-radius:4px;white-space:nowrap" onmouseover="this.style.background=\'#f1f5f9\'" onmouseout="this.style.background=\'\'"><input type="checkbox" value="'+m+'" '+(isChecked?'checked':'')+' onchange="updBPersons('+pid+','+bid+',this)" class="person-chk-'+pid+'-'+bid+'"><span class="mp-name">'+m+'</span></label>';
   }).join('');
+}
+// 初始化下拉框内的人员标签（主/协）
+function initPersonTags(wrap,personArr){
+  if(!Array.isArray(personArr)) personArr=[];
+  wrap.querySelectorAll('.mp-item').forEach(lb=>{
+    const cb=lb.querySelector('input[type=checkbox]');
+    const nameSpan=lb.querySelector('.mp-name');
+    if(!cb||!nameSpan)return;
+    const m=cb.value;
+    const idx=personArr.indexOf(m);
+    // 移除旧标签
+    lb.querySelectorAll('.mp-tag').forEach(t=>t.remove());
+    if(idx===0){
+      const t=document.createElement('span');
+      t.className='mp-tag';t.style.cssText='font-size:9px;color:#fff;background:#3b82f6;border-radius:3px;padding:0 4px;margin-left:4px;flex-shrink:0';
+      t.textContent='主';nameSpan.after(t);
+    }else if(idx>0){
+      const t=document.createElement('span');
+      t.className='mp-tag';t.style.cssText='font-size:9px;color:#fff;background:#8b5cf6;border-radius:3px;padding:0 4px;margin-left:4px;flex-shrink:0';
+      t.textContent='协';nameSpan.after(t);
+    }
+  });
 }
 function updBPersons(pid,bid,thisChk){
   const b=products.find(x=>x.id===Number(pid)).batches.find(b=>String(b.bid)===String(bid));
@@ -654,32 +674,17 @@ function updBPersons(pid,bid,thisChk){
   const wrap=document.querySelector('.person-chk-'+pid+'-'+bid).closest('.multi-person-wrap');
   if(wrap){
     wrap.querySelector('.mp-label').textContent=personDisplay(b.person);
-    // 更新主/协标签
-    wrap.querySelectorAll('.mp-item').forEach(lb=>{
-      const existingTag=lb.querySelector('.mp-tag');
-      if(existingTag) existingTag.remove();
-      const cb=lb.querySelector('input[type=checkbox]');
-      const m=cb?cb.value:'';
-      const idx=b.person.indexOf(m);
-      if(idx===0){
-        const t=document.createElement('span');
-        t.className='mp-tag';t.style.cssText='font-size:9px;color:#fff;background:#3b82f6;border-radius:3px;padding:0 4px;margin-left:4px';
-        t.textContent='主';lb.appendChild(t);
-      }else if(idx>0){
-        const t=document.createElement('span');
-        t.className='mp-tag';t.style.cssText='font-size:9px;color:#fff;background:#8b5cf6;border-radius:3px;padding:0 4px;margin-left:4px';
-        t.textContent='协';lb.appendChild(t);
-      }
-    });
+    initPersonTags(wrap,b.person);
   }
 }
 let _openPersonDD=null;
 function togglePersonDD(trigger){
   const dd=trigger.nextElementSibling;
-  const isOpen=dd===_openPersonDD;
-  // 关闭之前打开的下拉
-  closeAllPersonDD();
-  // 切换当前
+  const isOpen=!dd.classList.contains('hidden');
+  // 先关闭所有下拉
+  document.querySelectorAll('.person-dropdown').forEach(d=>d.classList.add('hidden'));
+  _openPersonDD=null;
+  // 如果之前是关闭的，则打开当前
   if(!isOpen){
     dd.classList.remove('hidden');
     _openPersonDD=dd;
@@ -689,9 +694,11 @@ function closeAllPersonDD(){
   document.querySelectorAll('.person-dropdown').forEach(d=>d.classList.add('hidden'));
   _openPersonDD=null;
 }
-// 点击空白处关闭
+// 点击任何位置：如果不在下拉框区域内则关闭
 document.addEventListener('click',function(e){
-  if(!e.target.closest('.multi-person-wrap')){
+  const insideDropdown=e.target.closest('.person-dropdown');
+  const clickedTrigger=e.target.closest('.multi-person-trigger');
+  if(!insideDropdown && !clickedTrigger){
     closeAllPersonDD();
   }
 });
@@ -1009,6 +1016,17 @@ function openEdit(pid){
       <button class="btn accent" onclick="saveEdit(${p.id})">保存</button>
     </div>`;
   panel.classList.add("show");
+  // 初始化所有人员下拉框的标签
+  panel.querySelectorAll('.multi-person-wrap').forEach(wrap=>{
+    const pid2=Number(p.id);
+    const chkInput=wrap.querySelector('input[type=checkbox]');
+    if(!chkInput)return;
+    const cls=chkInput.className.match(/person-chk-\d+-(\d+)/);
+    if(!cls)return;
+    const bid2=Number(cls[1]);
+    const b2=p.batches.find(x=>String(x.bid)===String(bid2));
+    if(b2) initPersonTags(wrap,b2.person||[]);
+  });
 }
 
 function updSD(pid,si,f,v){products.find(x=>x.id===Number(pid)).stages[si][f]=v}
