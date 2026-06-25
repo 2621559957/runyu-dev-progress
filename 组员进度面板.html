@@ -43,23 +43,51 @@ h1{text-align:center;font-size:24px;font-weight:700;margin-bottom:6px;background
 
 /* 详细面板 */
 .detail-section{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-.col-card{background:#1e293b;border-radius:16px;border:1px solid #334155;overflow:hidden}
+.col-card{border-radius:16px;overflow:hidden;background:#1e293b;border:2px solid #334155}
 .col-header{padding:16px 20px;font-size:17px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
 .col-header .badge{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600}
-.col-card:nth-child(1) .col-header{background:linear-gradient(135deg,rgba(249,115,22,.15),transparent)}
-.col-card:nth-child(1) .badge{background:rgba(249,115,22,.2);color:#fb923c}
-.col-card:nth-child(2) .col-header{background:linear-gradient(135deg,rgba(34,211,238,.15),transparent)}
-.col-card:nth-child(2) .badge{background:rgba(34,211,238,.2);color:#38bdf8}
-.col-card:nth-child(3) .col-header{background:linear-gradient(135deg,rgba(167,139,250,.15),transparent)}
-.col-card:nth-child(3) .badge{background:rgba(167,139,250,.2);color:#c084fc}
-.col-card:nth-child(4) .col-header{background:linear-gradient(135deg,rgba(52,211,153,.15),transparent)}
-.col-card:nth-child(4) .badge{background:rgba(52,211,153,.2);color:#6ee7b7}
+
+/* -- 范孝兵：橙色 -- */
+#col-fan{border-color:rgba(251,146,60,.35);background:linear-gradient(180deg,rgba(251,146,60,.06) 0,rgba(251,146,60,.02) 50%,#1e293b 100%)}
+#col-fan .col-header{border-bottom:2px solid rgba(251,146,60,.3);color:#fb923c}
+#col-fan .badge{background:rgba(251,146,60,.25);color:#fb923c}
+#col-fan .prod-card{border-color:rgba(251,146,60,.15)}
+#col-fan .prod-card:hover{border-color:rgba(251,146,60,.4)}
+#col-fan .add-prod-btn{border-color:rgba(251,146,60,.25);color:rgba(251,146,60,.6)}
+#col-fan .add-prod-btn:hover{border-color:rgba(251,146,60,.5);color:#fb923c}
+
+/* -- 汪天宝：蓝色 -- */
+#col-wang{border-color:rgba(56,189,248,.35);background:linear-gradient(180deg,rgba(56,189,248,.06) 0,rgba(56,189,248,.02) 50%,#1e293b 100%)}
+#col-wang .col-header{border-bottom:2px solid rgba(56,189,248,.3);color:#38bdf8}
+#col-wang .badge{background:rgba(56,189,248,.25);color:#38bdf8}
+#col-wang .prod-card{border-color:rgba(56,189,248,.15)}
+#col-wang .prod-card:hover{border-color:rgba(56,189,248,.4)}
+#col-wang .add-prod-btn{border-color:rgba(56,189,248,.25);color:rgba(56,189,248,.6)}
+#col-wang .add-prod-btn:hover{border-color:rgba(56,189,248,.5);color:#38bdf8}
+
+/* -- 李知春：紫色 -- */
+#col-li{border-color:rgba(192,132,252,.35);background:linear-gradient(180deg,rgba(192,132,252,.06) 0,rgba(192,132,252,.02) 50%,#1e293b 100%)}
+#col-li .col-header{border-bottom:2px solid rgba(192,132,252,.3);color:#c084fc}
+#col-li .badge{background:rgba(192,132,252,.25);color:#c084fc}
+#col-li .prod-card{border-color:rgba(192,132,252,.15)}
+#col-li .prod-card:hover{border-color:rgba(192,132,252,.4)}
+#col-li .add-prod-btn{border-color:rgba(192,132,252,.25);color:rgba(192,132,252,.6)}
+#col-li .add-prod-btn:hover{border-color:rgba(192,132,252,.5);color:#c084fc}
+
+/* -- 吴玉萱：绿色 -- */
+#col-wu{border-color:rgba(110,231,183,.35);background:linear-gradient(180deg,rgba(110,231,183,.06) 0,rgba(110,231,183,.02) 50%,#1e293b 100%)}
+#col-wu .col-header{border-bottom:2px solid rgba(110,231,183,.3);color:#6ee7b7}
+#col-wu .badge{background:rgba(110,231,183,.25);color:#6ee7b7}
+#col-wu .prod-card{border-color:rgba(110,231,183,.15)}
+#col-wu .prod-card:hover{border-color:rgba(110,231,183,.4)}
+#col-wu .add-prod-btn{border-color:rgba(110,231,183,.25);color:rgba(110,231,183,.6)}
+#col-wu .add-prod-btn:hover{border-color:rgba(110,231,183,.5);color:#6ee7b7}
 
 .col-body{padding:12px 16px 16px}
 
 /* 产品卡 */
-.prod-card{background:#0f172a;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #1e293b;transition:all .15s}
-.prod-card:hover{border-color:#475569}
+.prod-card{border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #1e293b;transition:all .15s;background:#0f172a}
+.prod-card:last-child{margin-bottom:0}
 .prod-card:last-child{margin-bottom:0}
 .prod-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .prod-name{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:65%}
