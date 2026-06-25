@@ -200,6 +200,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;backgr
 .batch-card .bc-dropdown:hover{color:#64748b}
 .batch-card .bc-stages{display:block}
 .batch-card .bc-stages.hidden{display:none}
+.person-dropdown.hidden{display:none}
 .add-panel{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:14px;border:1px solid #e2e8f0;box-shadow:0 16px 48px rgba(0,0,0,0.12);z-index:200;width:420px}
 .add-panel.show{display:block}
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(10px);background:#1e293b;color:#fff;padding:10px 22px;border-radius:10px;font-size:12px;z-index:300;opacity:0;transition:all .25s;pointer-events:none;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,0.2)}
@@ -677,29 +678,18 @@ function updBPersons(pid,bid,thisChk){
     initPersonTags(wrap,b.person);
   }
 }
-let _openPersonDD=null;
 function togglePersonDD(trigger){
   const dd=trigger.nextElementSibling;
   const isOpen=!dd.classList.contains('hidden');
-  // 先关闭所有下拉
+  // 先关闭所有
   document.querySelectorAll('.person-dropdown').forEach(d=>d.classList.add('hidden'));
-  _openPersonDD=null;
-  // 如果之前是关闭的，则打开当前
-  if(!isOpen){
-    dd.classList.remove('hidden');
-    _openPersonDD=dd;
-  }
+  // 如果之前是关闭的，打开它
+  if(!isOpen) dd.classList.remove('hidden');
 }
-function closeAllPersonDD(){
-  document.querySelectorAll('.person-dropdown').forEach(d=>d.classList.add('hidden'));
-  _openPersonDD=null;
-}
-// 点击任何位置：如果不在下拉框区域内则关闭
+// 点击空白处关闭
 document.addEventListener('click',function(e){
-  const insideDropdown=e.target.closest('.person-dropdown');
-  const clickedTrigger=e.target.closest('.multi-person-trigger');
-  if(!insideDropdown && !clickedTrigger){
-    closeAllPersonDD();
+  if(!e.target.closest('.multi-person-wrap')){
+    document.querySelectorAll('.person-dropdown').forEach(d=>d.classList.add('hidden'));
   }
 });
 
