@@ -636,48 +636,63 @@ function buildPersonCheckboxes(pid,bid,selected){
     const isFirst=Array.isArray(selected)&&selected.length>0&&selected[0]===m;
     const isCo=isChecked&&!isFirst;
     const tag=isFirst?'<span style="font-size:9px;color:#fff;background:#3b82f6;border-radius:3px;padding:0 4px;margin-left:4px">主</span>':isCo?'<span style="font-size:9px;color:#fff;background:#8b5cf6;border-radius:3px;padding:0 4px;margin-left:4px">协</span>':'';
-    return'<label class="mp-item" style="display:flex;align-items:center;gap:6px;padding:3px 4px;cursor:pointer;font-size:11px;border-radius:4px" onmouseover="this.style.background=\'#f1f5f9\'" onmouseout="this.style.background=\'\'"><input type="checkbox" value="'+m+'" '+(isChecked?'checked':'')+' onchange="updBPersons('+pid+','+bid+')" class="person-chk-'+pid+'-'+bid+'">'+m+tag+'</label>';
+    return'<label class="mp-item" style="display:flex;align-items:center;gap:6px;padding:3px 4px;cursor:pointer;font-size:11px;border-radius:4px" onmouseover="this.style.background=\'#f1f5f9\'" onmouseout="this.style.background=\'\'"><input type="checkbox" value="'+m+'" '+(isChecked?'checked':'')+' onchange="updBPersons('+pid+','+bid+',this)" class="person-chk-'+pid+'-'+bid+'">'+m+tag+'</label>';
   }).join('');
 }
-function updBPersons(pid,bid){
+function updBPersons(pid,bid,thisChk){
   const b=products.find(x=>x.id===Number(pid)).batches.find(b=>String(b.bid)===String(bid));
   if(!b)return;
-  const checks=document.querySelectorAll('.person-chk-'+pid+'-'+bid+':checked');
-  b.person=Array.from(checks).map(c=>c.value);
+  if(!Array.isArray(b.person)) b.person=[];
+  const v=thisChk.value;
+  if(thisChk.checked){
+    // 追加到末尾，保持勾选顺序
+    if(!b.person.includes(v)) b.person.push(v);
+  } else {
+    b.person=b.person.filter(m=>m!==v);
+  }
   // 更新触发器显示
   const wrap=document.querySelector('.person-chk-'+pid+'-'+bid).closest('.multi-person-wrap');
   if(wrap){
     wrap.querySelector('.mp-label').textContent=personDisplay(b.person);
     // 更新主/协标签
     wrap.querySelectorAll('.mp-item').forEach(lb=>{
-      const existingTag=lb.querySelector('span[style]');
+      const existingTag=lb.querySelector('.mp-tag');
       if(existingTag) existingTag.remove();
-      const m=lb.textContent.trim();
+      const cb=lb.querySelector('input[type=checkbox]');
+      const m=cb?cb.value:'';
       const idx=b.person.indexOf(m);
       if(idx===0){
         const t=document.createElement('span');
-        t.style.cssText='font-size:9px;color:#fff;background:#3b82f6;border-radius:3px;padding:0 4px;margin-left:4px';
+        t.className='mp-tag';t.style.cssText='font-size:9px;color:#fff;background:#3b82f6;border-radius:3px;padding:0 4px;margin-left:4px';
         t.textContent='主';lb.appendChild(t);
       }else if(idx>0){
         const t=document.createElement('span');
-        t.style.cssText='font-size:9px;color:#fff;background:#8b5cf6;border-radius:3px;padding:0 4px;margin-left:4px';
+        t.className='mp-tag';t.style.cssText='font-size:9px;color:#fff;background:#8b5cf6;border-radius:3px;padding:0 4px;margin-left:4px';
         t.textContent='协';lb.appendChild(t);
       }
     });
   }
 }
+let _openPersonDD=null;
 function togglePersonDD(trigger){
   const dd=trigger.nextElementSibling;
-  const isOpen=!dd.classList.contains('hidden');
-  // 先关闭所有下拉
-  document.querySelectorAll('.person-dropdown').forEach(d=>d.classList.add('hidden'));
-  // 如果之前是关闭的，则打开
-  if(!isOpen) dd.classList.remove('hidden');
+  const isOpen=dd===_openPersonDD;
+  // 关闭之前打开的下拉
+  closeAllPersonDD();
+  // 切换当前
+  if(!isOpen){
+    dd.classList.remove('hidden');
+    _openPersonDD=dd;
+  }
 }
-// 点击空白处关闭人员下拉 + 点击checkbox按钮不关闭
+function closeAllPersonDD(){
+  document.querySelectorAll('.person-dropdown').forEach(d=>d.classList.add('hidden'));
+  _openPersonDD=null;
+}
+// 点击空白处关闭
 document.addEventListener('click',function(e){
   if(!e.target.closest('.multi-person-wrap')){
-    document.querySelectorAll('.person-dropdown').forEach(d=>d.classList.add('hidden'));
+    closeAllPersonDD();
   }
 });
 
