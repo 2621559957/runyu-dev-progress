@@ -87,19 +87,19 @@ const catTags = {"相框":'<span class="tag tag-frame">相框</span>',"柜子":'
 
 // Current stage mapping for each product
 const cardData = [
-  {id:"p1",cat:"相框",name:"悬浮框",person:"陈工",stage:"sample",date:"6.25",risk:false},
-  {id:"p2",cat:"相框",name:"球衣框",person:"陈工",stage:"design",date:"6.25",risk:true,riskNote:"授权谈判"},
-  {id:"p3",cat:"相框",name:"复古照片墙",person:"林工",stage:"sample",date:"6.28",risk:true,riskNote:"做旧良率75%"},
-  {id:"p4",cat:"相框",name:"装饰照片墙",person:"王工",stage:"design",date:"6.25",risk:false},
-  {id:"p5",cat:"相框",name:"密度板线条",person:"赵工",stage:"qa",date:"6.30",risk:false},
-  {id:"p6",cat:"相框",name:"发泡线条",person:"赵工",stage:"fba",date:"已完成",risk:false},
-  {id:"p7",cat:"相框",name:"实木线条",person:"赵工",stage:"design",date:"6.25",risk:true,riskNote:"供应商未定"},
-  {id:"p8",cat:"相框",name:"树脂相框",person:"王工",stage:"research",date:"6.25",risk:true,riskNote:"模具费"},
-  {id:"p9",cat:"柜子",name:"书柜",person:"张工",stage:"supplier",date:"6.25",risk:false},
-  {id:"p10",cat:"柜子",name:"置物架",person:"张工",stage:"design",date:"6.25",risk:true,riskNote:"BOM超预算"},
-  {id:"p11",cat:"柜子",name:"床头柜",person:"张工",stage:"sample",date:"6.28",risk:false},
-  {id:"p12",cat:"柜子",name:"雕刻板",person:"王工",stage:"design",date:"6.22",risk:true,riskNote:"版权确认"},
-  {id:"p13",cat:"PET",name:"小收纳盒",person:"刘工",stage:"design",date:"6.25",risk:true,riskNote:"双重谈判"}
+  {id:"p1",cat:"相框",name:"悬浮框",stage:"sample",date:"6.25",risk:false},
+  {id:"p2",cat:"相框",name:"球衣框",stage:"design",date:"6.25",risk:true,riskNote:"授权谈判"},
+  {id:"p3",cat:"相框",name:"复古照片墙",stage:"sample",date:"6.28",risk:true,riskNote:"做旧良率75%"},
+  {id:"p4",cat:"相框",name:"装饰照片墙",stage:"design",date:"6.25",risk:false},
+  {id:"p5",cat:"相框",name:"密度板线条",stage:"qa",date:"6.30",risk:false},
+  {id:"p6",cat:"相框",name:"发泡线条",stage:"fba",date:"已完成",risk:false},
+  {id:"p7",cat:"相框",name:"实木线条",stage:"design",date:"6.25",risk:true,riskNote:"供应商未定"},
+  {id:"p8",cat:"相框",name:"树脂相框",stage:"research",date:"6.25",risk:true,riskNote:"模具费"},
+  {id:"p9",cat:"柜子",name:"书柜",stage:"supplier",date:"6.25",risk:false},
+  {id:"p10",cat:"柜子",name:"置物架",stage:"design",date:"6.25",risk:true,riskNote:"BOM超预算"},
+  {id:"p11",cat:"柜子",name:"床头柜",stage:"sample",date:"6.28",risk:false},
+  {id:"p12",cat:"柜子",name:"雕刻板",stage:"design",date:"6.22",risk:true,riskNote:"版权确认"},
+  {id:"p13",cat:"PET",name:"小收纳盒",stage:"design",date:"6.25",risk:true,riskNote:"双重谈判"}
 ];
 
 function renderCards() {
@@ -118,7 +118,7 @@ function renderCards() {
       card.ondragend = () => card.classList.remove("dragging");
       card.innerHTML = `<div class="r1">${catTags[c.cat]}${c.risk?`<span class="risk" title="${c.riskNote}">⚠${c.riskNote}</span>`:''}</div>
         <div class="name">${c.name}</div>
-        <div class="r3"><span class="person">${c.person}</span><span class="date">${c.date}</span></div>`;
+        <div class="r3"><span class="date">${c.date}</span></div>`;
       container.appendChild(card);
     });
   });

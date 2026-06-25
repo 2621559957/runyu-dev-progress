@@ -100,7 +100,7 @@ body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#f7f8f5;m
 <script>
 // === Product Data ===
 const products = [
-  {cat:"相框",sub:"新款式",name:"悬浮框",person:"陈工",risk:false,riskNote:"",stages:[
+  {cat:"相框",sub:"新款式",name:"悬浮框",risk:false,riskNote:"",stages:[
     {s:"调研立项",st:"2026-05-10",et:"2026-05-20",status:"done"},
     {s:"设计打样",st:"2026-05-28",et:"2026-06-08",status:"done"},
     {s:"供应商确认",st:"2026-06-08",et:"2026-06-15",status:"done"},
@@ -109,7 +109,7 @@ const products = [
     {s:"品质验货",st:"2026-07-18",et:"2026-07-25",status:"pend"},
     {s:"FBA发货",st:"2026-07-25",et:"2026-08-01",status:"pend"}
   ]},
-  {cat:"相框",sub:"新款式",name:"球衣框",person:"陈工",risk:true,riskNote:"授权谈判周期不可控",stages:[
+  {cat:"相框",sub:"新款式",name:"球衣框",risk:true,riskNote:"授权谈判周期不可控",stages:[
     {s:"调研立项",st:"2026-05-15",et:"2026-05-25",status:"done"},
     {s:"设计打样",st:"2026-06-01",et:"2026-06-25",status:"curr"},
     {s:"供应商确认",st:"2026-07-01",et:"2026-07-10",status:"pend"},
@@ -118,7 +118,7 @@ const products = [
     {s:"品质验货",st:"2026-08-15",et:"2026-08-25",status:"pend"},
     {s:"FBA发货",st:"2026-08-25",et:"2026-09-05",status:"pend"}
   ]},
-  {cat:"相框",sub:"照片墙",name:"复古照片墙",person:"林工",risk:true,riskNote:"做旧良率~75%需驻厂",stages:[
+  {cat:"相框",sub:"照片墙",name:"复古照片墙",risk:true,riskNote:"做旧良率~75%需驻厂",stages:[
     {s:"调研立项",st:"2026-05-20",et:"2026-05-28",status:"done"},
     {s:"设计打样",st:"2026-06-01",et:"2026-06-08",status:"done"},
     {s:"供应商确认",st:"2026-06-10",et:"2026-06-18",status:"done"},
@@ -127,7 +127,7 @@ const products = [
     {s:"品质验货",st:"2026-07-20",et:"2026-07-30",status:"pend"},
     {s:"FBA发货",st:"2026-07-30",et:"2026-08-08",status:"pend"}
   ]},
-  {cat:"相框",sub:"照片墙",name:"装饰照片墙",person:"王工",risk:false,riskNote:"",stages:[
+  {cat:"相框",sub:"照片墙",name:"装饰照片墙",risk:false,riskNote:"",stages:[
     {s:"调研立项",st:"2026-05-25",et:"2026-06-05",status:"done"},
     {s:"设计打样",st:"2026-06-10",et:"2026-06-25",status:"curr"},
     {s:"供应商确认",st:"2026-06-28",et:"2026-07-05",status:"pend"},
@@ -136,7 +136,7 @@ const products = [
     {s:"品质验货",st:"2026-08-05",et:"2026-08-15",status:"pend"},
     {s:"FBA发货",st:"2026-08-15",et:"2026-08-25",status:"pend"}
   ]},
-  {cat:"相框",sub:"线条",name:"密度板线条",person:"赵工",risk:false,riskNote:"",stages:[
+  {cat:"相框",sub:"线条",name:"密度板线条",risk:false,riskNote:"",stages:[
     {s:"调研立项",st:"2026-04-20",et:"2026-04-30",status:"done"},
     {s:"设计打样",st:"2026-05-01",et:"2026-05-10",status:"done"},
     {s:"供应商确认",st:"2026-05-10",et:"2026-05-18",status:"done"},
@@ -145,7 +145,7 @@ const products = [
     {s:"品质验货",st:"2026-06-20",et:"2026-06-30",status:"curr"},
     {s:"FBA发货",st:"2026-07-03",et:"2026-07-15",status:"pend"}
   ]},
-  {cat:"相框",sub:"线条",name:"发泡线条",person:"赵工",risk:false,riskNote:"",stages:[
+  {cat:"相框",sub:"线条",name:"发泡线条",risk:false,riskNote:"",stages:[
     {s:"调研立项",st:"2026-04-15",et:"2026-04-25",status:"done"},
     {s:"设计打样",st:"2026-04-28",et:"2026-05-08",status:"done"},
     {s:"供应商确认",st:"2026-05-05",et:"2026-05-15",status:"done"},
@@ -154,7 +154,7 @@ const products = [
     {s:"品质验货",st:"2026-06-12",et:"2026-06-18",status:"done"},
     {s:"FBA发货",st:"2026-06-18",et:"2026-06-28",status:"done"}
   ]},
-  {cat:"相框",sub:"线条",name:"实木线条",person:"赵工",risk:true,riskNote:"供应商未定 deadline6.30",stages:[
+  {cat:"相框",sub:"线条",name:"实木线条",risk:true,riskNote:"供应商未定 deadline6.30",stages:[
     {s:"调研立项",st:"2026-05-10",et:"2026-05-20",status:"done"},
     {s:"设计打样",st:"2026-06-10",et:"2026-06-25",status:"curr"},
     {s:"供应商确认",st:"2026-06-25",et:"2026-07-05",status:"pend"},
@@ -163,7 +163,7 @@ const products = [
     {s:"品质验货",st:"2026-08-20",et:"2026-08-30",status:"pend"},
     {s:"FBA发货",st:"2026-08-30",et:"2026-09-10",status:"pend"}
   ]},
-  {cat:"相框",sub:"",name:"树脂相框",person:"王工",risk:true,riskNote:"模具费评估中",stages:[
+  {cat:"相框",sub:"",name:"树脂相框",risk:true,riskNote:"模具费评估中",stages:[
     {s:"调研立项",st:"2026-06-10",et:"2026-06-25",status:"curr"},
     {s:"设计打样",st:"2026-07-01",et:"2026-07-15",status:"pend"},
     {s:"供应商确认",st:"2026-07-20",et:"2026-07-30",status:"pend"},
@@ -173,7 +173,7 @@ const products = [
     {s:"FBA发货",st:"2026-09-25",et:"2026-10-05",status:"pend"}
   ]},
   // 柜子
-  {cat:"柜子",sub:"",name:"书柜",person:"张工",risk:false,riskNote:"",stages:[
+  {cat:"柜子",sub:"",name:"书柜",risk:false,riskNote:"",stages:[
     {s:"调研立项",st:"2026-05-15",et:"2026-05-28",status:"done"},
     {s:"设计打样",st:"2026-05-30",et:"2026-06-12",status:"done"},
     {s:"供应商确认",st:"2026-06-15",et:"2026-06-25",status:"curr"},
@@ -182,7 +182,7 @@ const products = [
     {s:"品质验货",st:"2026-08-05",et:"2026-08-15",status:"pend"},
     {s:"FBA发货",st:"2026-08-15",et:"2026-08-25",status:"pend"}
   ]},
-  {cat:"柜子",sub:"",name:"置物架",person:"张工",risk:true,riskNote:"承重结构推高BOM",stages:[
+  {cat:"柜子",sub:"",name:"置物架",risk:true,riskNote:"承重结构推高BOM",stages:[
     {s:"调研立项",st:"2026-05-20",et:"2026-06-05",status:"done"},
     {s:"设计打样",st:"2026-06-10",et:"2026-06-25",status:"curr"},
     {s:"供应商确认",st:"2026-06-28",et:"2026-07-05",status:"pend"},
@@ -191,7 +191,7 @@ const products = [
     {s:"品质验货",st:"2026-08-10",et:"2026-08-20",status:"pend"},
     {s:"FBA发货",st:"2026-08-20",et:"2026-08-30",status:"pend"}
   ]},
-  {cat:"柜子",sub:"",name:"床头柜",person:"张工",risk:false,riskNote:"",stages:[
+  {cat:"柜子",sub:"",name:"床头柜",risk:false,riskNote:"",stages:[
     {s:"调研立项",st:"2026-05-10",et:"2026-05-22",status:"done"},
     {s:"设计打样",st:"2026-05-25",et:"2026-06-08",status:"done"},
     {s:"供应商确认",st:"2026-06-10",et:"2026-06-18",status:"done"},
@@ -200,7 +200,7 @@ const products = [
     {s:"品质验货",st:"2026-07-22",et:"2026-08-01",status:"pend"},
     {s:"FBA发货",st:"2026-08-01",et:"2026-08-12",status:"pend"}
   ]},
-  {cat:"柜子",sub:"",name:"雕刻板",person:"王工",risk:true,riskNote:"图案版权待确认",stages:[
+  {cat:"柜子",sub:"",name:"雕刻板",risk:true,riskNote:"图案版权待确认",stages:[
     {s:"调研立项",st:"2026-05-18",et:"2026-05-30",status:"done"},
     {s:"设计打样",st:"2026-06-08",et:"2026-06-22",status:"curr"},
     {s:"供应商确认",st:"2026-06-28",et:"2026-07-05",status:"pend"},
@@ -210,7 +210,7 @@ const products = [
     {s:"FBA发货",st:"2026-08-20",et:"2026-08-30",status:"pend"}
   ]},
   // PET
-  {cat:"PET",sub:"",name:"小收纳盒",person:"刘工",risk:true,riskNote:"模具费+原料价双重谈判",stages:[
+  {cat:"PET",sub:"",name:"小收纳盒",risk:true,riskNote:"模具费+原料价双重谈判",stages:[
     {s:"调研立项",st:"2026-05-25",et:"2026-06-10",status:"done"},
     {s:"设计打样",st:"2026-06-10",et:"2026-06-25",status:"curr"},
     {s:"供应商确认",st:"2026-07-05",et:"2026-07-15",status:"pend"},
@@ -266,9 +266,8 @@ function buildGantt(filter) {
     visible.forEach((p,i)=>{
       const rowId = catId+"_r"+i;
       html += `<div class="prod-row" data-catid="${catId}" id="${rowId}">
-        <div class="name-col" title="${p.name} · ${p.person} · ${p.riskNote||'无风险'}">
+        <div class="name-col" title="${p.name}${p.riskNote?' · '+p.riskNote:''}">
           <span class="pn">${p.sub?p.sub+"·":""}${p.name}</span>
-          <span class="person">${p.person}</span>
           ${p.risk?'<span class="risk-dot" title="'+p.riskNote+'"></span>':''}
         </div>
         <div class="bars-col">`;
