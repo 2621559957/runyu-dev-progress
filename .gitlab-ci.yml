@@ -1,0 +1,10 @@
+pages:
+  script:
+    - mkdir -p public
+    - cp index.html public/
+    - cp 产品开发进度_管理工具.html public/
+  artifacts:
+    paths:
+      - public
+  only:
+    - main
