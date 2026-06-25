@@ -10,17 +10,16 @@ const REPO_DIR = __dirname.replace(/\//g, '\\');
 // Windows PortableGit 绝对路径（spawnSync 不走 shell，必须用反斜杠）
 const GIT_EXE = 'C:\\Users\\admin\\.workbuddy\\vendor\\PortableGit\\mingw64\\bin\\git.exe';
 
-// 自动检测系统代理（Clash 默认 7890，也支持 7897 等）
-function getProxyEnv() {
-  const proxy = process.env.HTTP_PROXY || process.env.http_proxy ||
-                process.env.HTTPS_PROXY || process.env.https_proxy || '';
-  if (proxy) return { HTTPS_PROXY: proxy, HTTP_PROXY: proxy };
-  // 尝试常见代理端口（Clash: 7890, 7897）
-  const commonPorts = ['7890', '7897', '1080', '8080'];
-  for (const port of commonPorts) {
-    // 不自动探测，只传已有的环境变量
-  }
-  return {};
+// 去除代理变量：remote URL 已嵌入 token，走代理反而破坏 GitHub 认证
+function getCleanEnv() {
+  const env = { ...process.env };
+  delete env.HTTP_PROXY;
+  delete env.HTTPS_PROXY;
+  delete env.http_proxy;
+  delete env.https_proxy;
+  delete env.ALL_PROXY;
+  delete env.all_proxy;
+  return env;
 }
 
 function runGit(args) {
@@ -28,7 +27,7 @@ function runGit(args) {
     cwd: REPO_DIR,
     encoding: 'utf8',
     timeout: 60000,
-    env: { ...process.env, GIT_TERMINAL_PROMPT: '0', ...getProxyEnv() }
+    env: { ...getCleanEnv(), GIT_TERMINAL_PROMPT: '0' }
   });
   if (result.error) {
     return { ok: false, msg: 'spawn error: ' + result.error.message };
