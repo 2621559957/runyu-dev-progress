@@ -55,7 +55,7 @@ const server = http.createServer((req, res) => {
     let body = '';
     req.on('data', d => body += d.toString('utf8'));
     req.on('end', () => {
-      const mainFile = path.join(REPO_DIR, '产品开发进度_管理工具.html');
+      const mainFile = path.join(REPO_DIR, 'index.html');
       const idxFile = path.join(REPO_DIR, 'index.html');
       const status = [];
 
@@ -111,7 +111,7 @@ const server = http.createServer((req, res) => {
       try { fs.unlinkSync(path.join(REPO_DIR, '.git', 'index.lock')); } catch(e) {}
 
       // 4. Git add（用相对文件名，cwd 已是正确的 REPO_DIR）
-      const addRes = runGit(['add', '产品开发进度_管理工具.html', 'index.html']);
+      const addRes = runGit(['add', 'index.html']);
       if (!addRes.ok) {
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: false, msg: 'git add 失败：' + addRes.msg }));
