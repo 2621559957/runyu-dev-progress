@@ -59,12 +59,13 @@ const server = http.createServer((req, res) => {
       const idxFile = path.join(REPO_DIR, 'index.html');
       const status = [];
 
-      // 1. 用 POST body 中的最新数据更新 EMBEDDED_DATA 和 EMBEDDED_MEMBERS
+      // 1. 用 POST body 中的最新数据更新 EMBEDDED_DATA / EMBEDDED_MEMBERS / EMBEDDED_MONTHLY
       if (body && body.length > 10) {
         try {
           const payload = JSON.parse(body);
           const data = payload.products || payload;  // 兼容旧格式（纯数组）
           const members = payload.members || [];
+          const monthly = payload.monthlyProgress || [];
           let html = fs.readFileSync(mainFile, 'utf8');
           let updated = false;
           // 更新产品数据（非空时才更新）
@@ -79,6 +80,18 @@ const server = http.createServer((req, res) => {
             const newMembers = 'const EMBEDDED_MEMBERS = ' + JSON.stringify(members) + ';';
             html = html.replace(/const EMBEDDED_MEMBERS\s*=\s*\[[\s\S]*?\];/, newMembers);
             status.push('DATA: 已更新EMBEDDED_MEMBERS (' + members.length + '个组员)');
+            updated = true;
+          }
+          // 更新月度任务进度（只要传了 monthlyProgress 就更新，允许空数组）
+          if (payload.monthlyProgress !== undefined) {
+            const newMonthly = 'const EMBEDDED_MONTHLY = ' + JSON.stringify(monthly) + ';';
+            if (html.includes('const EMBEDDED_MONTHLY')) {
+              html = html.replace(/const EMBEDDED_MONTHLY\s*=\s*\[[\s\S]*?\];/, newMonthly);
+            } else {
+              // 如果旧版 HTML 没有 EMBEDDED_MONTHLY，在 EMBEDDED_MEMBERS 后面插入
+              html = html.replace(/(const EMBEDDED_MEMBERS\s*=\s*\[[\s\S]*?\];)/, '$1\n' + newMonthly);
+            }
+            status.push('DATA: 已更新EMBEDDED_MONTHLY (' + monthly.length + '个月份)');
             updated = true;
           }
           if (updated) {
