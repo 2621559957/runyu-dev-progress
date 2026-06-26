@@ -86,11 +86,16 @@ h1{text-align:center;font-size:24px;font-weight:700;margin-bottom:6px;background
 .col-body{padding:12px 16px 16px}
 
 /* 产品卡 */
-.prod-card{border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #1e293b;transition:all .15s;background:#0f172a}
+.prod-card{border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #1e293b;border-left:4px solid #334155;transition:all .15s;background:#0f172a}
+.prod-card.cat-相框{border-left-color:#3b82f6}
+.prod-card.cat-柜子{border-left-color:#f59e0b}
+.prod-card.cat-PET{border-left-color:#22c55e}
+.prod-card.cat-其它{border-left-color:#8b5cf6}
 .prod-card:last-child{margin-bottom:0}
 .prod-card:last-child{margin-bottom:0}
 .prod-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .prod-name{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:65%}
+.cat-tag{font-size:9px;padding:1px 8px;border-radius:10px;font-weight:600;flex-shrink:0}
 .prod-batch-num{font-size:11px;color:#64748b}
 .prod-stages{display:flex;align-items:center;gap:3px;margin-bottom:10px;flex-wrap:wrap}
 .stage-dot{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;cursor:pointer;transition:all .15s;position:relative;flex-shrink:0}
@@ -192,6 +197,9 @@ h1{text-align:center;font-size:24px;font-weight:700;margin-bottom:6px;background
 
 <script>
 const STAGES = ['调研立项','设计打样','供应商确认','样品测试','大货生产','出货'];
+const CATS = ['相框','柜子','PET','其它'];
+const CAT_COLORS = {相框:'#3b82f6',柜子:'#f59e0b',PET:'#22c55e','其它':'#8b5cf6'};
+const CAT_ORDER = {相框:0,柜子:1,PET:2,'其它':3};
 const PERSONS = [
   {id:'fan',name:'范孝兵',color:'#fb923c',bar:'#f97316'},
   {id:'wang',name:'汪天宝',color:'#38bdf8',bar:'#22d3ee'},
@@ -202,7 +210,7 @@ const PERSONS = [
 const STORAGE_KEY = 'team_progress_data';
 
 const DEMO_DATA = [
-  {id:1,name:'磁吸相框',batches:[
+  {id:1,name:'磁吸相框',cat:'相框',batches:[
     {bid:1,name:'第1批',person:['范孝兵'],stages:STAGES.map((s,i)=>{
       const d=new Date('2026-05-'+(10+i*8));const e=new Date('2026-05-'+(18+i*8));
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:i<4?'done':i===4?'curr':'pend'}
@@ -212,19 +220,19 @@ const DEMO_DATA = [
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:i<2?'done':i===2?'curr':'pend'}
     })}
   ]},
-  {id:2,name:'亚克力展示盒',batches:[
+  {id:2,name:'亚克力展示盒',cat:'相框',batches:[
     {bid:1,name:'第1批',person:['范孝兵','李知春'],stages:STAGES.map((s,i)=>{
       const d=new Date('2026-05-'+(15+i*6));const e=new Date('2026-05-'+(23+i*6));
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:i<3?'done':i===3?'curr':'pend'}
     })}
   ]},
-  {id:3,name:'玻璃花瓶',batches:[
+  {id:3,name:'玻璃花瓶',cat:'其它',batches:[
     {bid:1,name:'第1批',person:['汪天宝'],stages:STAGES.map((s,i)=>{
       const d=new Date('2026-05-'+(8+i*9));const e=new Date('2026-05-'+(18+i*9));
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:i<1?'done':i===1?'curr':'pend'}
     })}
   ]},
-  {id:4,name:'陶瓷摆件',batches:[
+  {id:4,name:'陶瓷摆件',cat:'其它',batches:[
     {bid:1,name:'第1批',person:['汪天宝','吴玉萱'],stages:STAGES.map((s,i)=>{
       const d=new Date('2026-06-'+(1+i*8));const e=new Date('2026-06-'+(10+i*8));
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:i===0?'done':i===1?'curr':'pend'}
@@ -234,19 +242,19 @@ const DEMO_DATA = [
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:i===0?'curr':'pend'}
     })}
   ]},
-  {id:5,name:'树脂托盘',batches:[
+  {id:5,name:'树脂托盘',cat:'其它',batches:[
     {bid:1,name:'第1批',person:['汪天宝'],stages:STAGES.map((s,i)=>{
       const d=new Date('2026-06-'+(10+i*7));const e=new Date('2026-06-'+(20+i*7));
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:'pend'}
     })}
   ]},
-  {id:6,name:'收纳柜',batches:[
+  {id:6,name:'收纳柜',cat:'柜子',batches:[
     {bid:1,name:'第1批',person:['李知春'],stages:STAGES.map((s,i)=>{
       const d=new Date('2026-04-'+(20+i*10));const e=new Date('2026-05-'+(2+i*10));
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:i<5?'done':i===5?'curr':'pend'}
     })}
   ]},
-  {id:7,name:'多层置物架',batches:[
+  {id:7,name:'多层置物架',cat:'柜子',batches:[
     {bid:1,name:'第1批',person:['李知春','范孝兵'],stages:STAGES.map((s,i)=>{
       const d=new Date('2026-05-'+(20+i*7));const e=new Date('2026-05-'+(30+i*7));
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:i<2?'done':i===2?'curr':'pend'}
@@ -256,13 +264,13 @@ const DEMO_DATA = [
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:'pend'}
     })}
   ]},
-  {id:8,name:'墙贴挂饰',batches:[
+  {id:8,name:'墙贴挂饰',cat:'PET',batches:[
     {bid:1,name:'第1批',person:['吴玉萱'],stages:STAGES.map((s,i)=>{
       const d=new Date('2026-05-'+(5+i*8));const e=new Date('2026-05-'+(15+i*8));
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:i<4?'done':i===4?'curr':'pend'}
     })}
   ]},
-  {id:9,name:'桌面收纳',batches:[
+  {id:9,name:'桌面收纳',cat:'PET',batches:[
     {bid:1,name:'第1批',person:['吴玉萱','汪天宝'],stages:STAGES.map((s,i)=>{
       const d=new Date('2026-05-'+(25+i*7));const e=new Date('2026-06-'+(5+i*7));
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:i<2?'done':i===2?'curr':'pend'}
@@ -272,7 +280,7 @@ const DEMO_DATA = [
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:'pend'}
     })}
   ]},
-  {id:10,name:'挂钩收纳',batches:[
+  {id:10,name:'挂钩收纳',cat:'PET',batches:[
     {bid:1,name:'第1批',person:['吴玉萱','李知春'],stages:STAGES.map((s,i)=>{
       const d=new Date('2026-06-'+(1+i*6));const e=new Date('2026-06-'+(10+i*6));
       return {s,st:d.toISOString().slice(0,10),et:e.toISOString().slice(0,10),status:i===0?'done':i===1?'curr':'pend'}
@@ -399,6 +407,8 @@ function renderDetail(){
   PERSONS.forEach(p=>{
     try{
       const prods=products.filter(x=>x.batches&&x.batches.some(b=>mainPersonOf(b)===p.name));
+      // 按分类排序：相框→柜子→PET→其它
+      prods.sort((a,b)=>CAT_ORDER[a.cat||'其它']-CAT_ORDER[b.cat||'其它']);
       fragments.push('<div class="col-card" id="col-'+p.id+'" style="display:block!important;visibility:visible!important;opacity:1!important">'
         +'<div class="col-header">'+p.name+'<span class="badge" style="display:inline!important">'+prods.length+'个产品</span></div>'
         +'<div class="col-body">'
@@ -440,6 +450,8 @@ function renderDetail(){
 }
 
 function renderProdCard(prod,p){
+  const cat=prod.cat||'其它';
+  const catColor=CAT_COLORS[cat]||'#64748b';
   const batches=prod.batches||[];
   const mainBatch=batches[0]||null;
   const pct=batches.length>0?Math.round(batches.reduce((a,b)=>a+batchProgress(b),0)/batches.length):0;
@@ -472,9 +484,9 @@ function renderProdCard(prod,p){
     +'<div class="toggle-batches" onclick="toggleBatches('+prod.id+')">▼ 展开所有批次（'+batches.length+'个）</div>';
   }
 
-  return '<div class="prod-card">'
+  return '<div class="prod-card cat-'+cat+'">'
     +'<div class="prod-hd">'
-      +'<span class="prod-name" title="'+prod.name+'">'+prod.name+'</span>'
+      +'<span class="prod-name" title="'+prod.name+'">'+prod.name+'<span class="cat-tag" style="background:'+catColor+'20;color:'+catColor+';margin-left:6px">'+cat+'</span></span>'
       +'<span class="prod-batch-num">'+batches.length+'批次</span>'
       +'<button class="btn btn-sm btn-danger" onclick="delProd('+prod.id+')" title="删除">✕</button>'
     +'</div>'
@@ -545,6 +557,8 @@ function showAddPanel(personId){
   const p=personById(personId);
   document.getElementById('panelContent').innerHTML=''
     +'<h3>添加产品 — '+p.name+'</h3>'
+    +'<label>产品分类</label>'
+    +'<div class="stage-checks" style="margin-bottom:10px">'+CATS.map(c=>'<span class="stage-chk'+(c==='相框'?' on':'')+'" data-cc="'+c+'" onclick="pickCat(this)">'+c+'</span>').join('')+'</div>'
     +'<label>产品名称</label><input id="pnInput" placeholder="输入产品名称">'
     +'<label>批次数</label><select id="pnBatches"><option value="1">1个批次</option><option value="2">2个批次</option><option value="3">3个批次</option></select>'
     +'<label>协同负责人（可多选）</label>'
@@ -557,13 +571,16 @@ function showAddPanel(personId){
   setTimeout(()=>document.getElementById('pnInput').focus(),150);
 }
 
+function pickCat(el){document.querySelectorAll('[data-cc]').forEach(x=>x.classList.remove('on'));el.classList.add('on')}
 function doAddProduct(){
   const name=document.getElementById('pnInput').value.trim();
   if(!name){toast('请输入产品名称');return}
+  const catChk=document.querySelector('[data-cc].on');
+  const cat=catChk?catChk.dataset.cc:'相框';
   const batchCount=parseInt(document.getElementById('pnBatches').value);
   // 收集选中的负责人
   const selectedIds=[];let mainFirst=true;
-  document.querySelectorAll('.stage-chk.on').forEach(chk=>{
+  document.querySelectorAll('.stage-chk.on[data-pid]').forEach(chk=>{
     const pid=chk.dataset.pid;
     if(pid===editTarget.personId)selectedIds.unshift(pid);
     else selectedIds.push(pid);
@@ -580,7 +597,7 @@ function doAddProduct(){
     });
     batches.push({bid:Math.max(...products.flatMap(p=>p.batches.map(b=>b.bid)),0)+j,name:'第'+j+'批',stages,person:personNames.slice()});
   }
-  products.push({id:nextId++,name,batches});
+  products.push({id:nextId++,name,cat,batches});
   saveData();closePanel();render();
   toast('✓ 已添加：'+name);
 }
