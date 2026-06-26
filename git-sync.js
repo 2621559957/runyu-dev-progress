@@ -141,8 +141,16 @@ const server = http.createServer((req, res) => {
       }
       status.push('COMMIT: ' + commitRes.msg);
 
-      // 7. Push
-      const pushRes = runGit(['push']);
+      // 7. Push（明确指定带 token 的 remote URL，避免 spawnSync 环境丢失认证）
+      let remoteUrl = '';
+      try {
+        const remoteRes = runGit(['remote', 'get-url', 'origin']);
+        if (remoteRes.ok) remoteUrl = remoteRes.msg.trim();
+      } catch(e) {}
+      const pushArgs = remoteUrl
+        ? ['push', remoteUrl, 'main']
+        : ['push', 'origin', 'main'];
+      const pushRes = runGit(pushArgs);
       if (!pushRes.ok) {
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ok: false, msg: status.join('\n') + '\nPUSH FAILED: ' + pushRes.msg }));
