@@ -3,17 +3,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>产品开发进度 · 多批次管理工具</title>
-<!--[CACHE_V:mqus8jd2]-->
-<script>
-(function(){
-  var v='mqus8jd2';
-  var p=new URLSearchParams(location.search);
-  if(p.get('v')!==v){
-    p.set('v',v);
-    location.replace(location.pathname+'?'+p.toString()+location.hash);
-  }
-})();
-</script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#f0f2f5;min-height:100vh;font-size:14px;color:#333}
@@ -1647,10 +1636,6 @@ function buildHtmlContent(){
   html=html.replace(/const EMBEDDED_DATA\s*=\s*\[[\s\S]*?\];/,'const EMBEDDED_DATA = '+dataStr+';');
   html=html.replace(/const EMBEDDED_MEMBERS\s*=\s*\[[\s\S]*?\];/,'const EMBEDDED_MEMBERS = '+memStr+';');
   html=html.replace(/const EMBEDDED_MONTHLY\s*=\s*\[[\s\S]*?\];/,'const EMBEDDED_MONTHLY = '+monthlyStr+';');
-  // 更新缓存版本号，确保 GitHub Pages 用户总能看到最新内容
-  var newV=Date.now().toString(36);
-  html=html.replace(/<!--\[CACHE_V:[^\]]*\]-->/,'<!--[CACHE_V:'+newV+']-->');
-  html=html.replace(/(var v=')[^']*(';)/,'$1'+newV+'$2');
   // 清除团队卡片的collapsed类，确保下次加载时卡片展开
   html=html.replace(/(<div[^>]*class="tp-card)\s+collapsed"/g,'$1"');
   return html;

@@ -95,10 +95,6 @@ const server = http.createServer((req, res) => {
             updated = true;
           }
           if (updated) {
-            // 每次写入时更新缓存版本号，确保 GitHub Pages 用户总是拉取最新内容
-            var newV = Date.now().toString(36);
-            html = html.replace(/<!--\[CACHE_V:[^\]]*\]-->/, '<!--[CACHE_V:' + newV + ']-->');
-            html = html.replace(/(var v=')[^']*(';)/, '$1' + newV + '$2');
             fs.writeFileSync(mainFile, html, 'utf8');
           }
         } catch(e) {
