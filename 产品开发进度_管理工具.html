@@ -629,7 +629,7 @@ function loadMonthly(){
   try{const d=JSON.parse(localStorage.getItem(MONTHLY_KEY));if(Array.isArray(d))return d}catch(e){}
   return JSON.parse(JSON.stringify(EMBEDDED_MONTHLY));
 }
-function saveMonthly(){try{localStorage.setItem(MONTHLY_KEY,JSON.stringify(monthlyProgress))}catch(e){}}
+function saveMonthly(){try{localStorage.setItem(MONTHLY_KEY,JSON.stringify(monthlyProgress))}catch(e){}writeToFile()}
 function ymLabel(ym){const [y,m]=ym.split('-');return y+'年'+parseInt(m)+'月'}
 function currentYM(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
 function migrateData(arr){
@@ -1235,9 +1235,11 @@ let fileHandle = null;
 function buildHtmlContent(){
   const dataStr=JSON.stringify(products);
   const memStr=JSON.stringify(getMembers());
+  const monthlyStr=JSON.stringify(monthlyProgress);
   let html='\uFEFF<!DOCTYPE html>\n'+document.documentElement.outerHTML;
   html=html.replace(/const EMBEDDED_DATA\s*=\s*\[[\s\S]*?\];/,'const EMBEDDED_DATA = '+dataStr+';');
   html=html.replace(/const EMBEDDED_MEMBERS\s*=\s*\[[\s\S]*?\];/,'const EMBEDDED_MEMBERS = '+memStr+';');
+  html=html.replace(/const EMBEDDED_MONTHLY\s*=\s*\[[\s\S]*?\];/,'const EMBEDDED_MONTHLY = '+monthlyStr+';');
   return html;
 }
 
